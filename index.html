@@ -172,6 +172,48 @@
   .gauge-marker span{font-family:var(--mono);font-size:11px;font-weight:700;background:#0f172a;color:#fff;padding:2px 7px;border-radius:6px;position:relative}
   .gauge-marker span::after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);border:5px solid transparent;border-bottom:0;border-top-color:#0f172a}
   .gauge-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);font-family:var(--mono);margin-top:8px}
+  /* Seven levels */
+  .lv-sub{font-size:13px;color:var(--muted);font-weight:500}
+  .lv-ladder{display:flex;flex-direction:column;gap:6px}
+  .lv-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;padding:4px 8px;border-radius:12px;transition:background .3s}
+  .lv-row.cur{background:#f0f9ff;outline:1px solid #bae6fd}
+  .lv-row.above{opacity:.6}
+  .lv-vis{position:relative;height:40px;display:flex;align-items:center;justify-content:center}
+  .lv-shape{height:38px;background:#e5e7eb}
+  .lv-shape.top{clip-path:polygon(0 0,100% 0,86% 100%,14% 100%)}
+  .lv-shape.bot{clip-path:polygon(14% 0,86% 0,100% 100%,0 100%)}
+  .lv-circle{width:40px;height:40px;border-radius:50%;background:#e5e7eb;border:2px solid #e5e7eb}
+  .lv-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;color:#fff;
+    font-weight:700;font-size:13px;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+  .lv-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px}
+  .lv-theme{font-size:11.5px;color:var(--dim)}
+  .you{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;background:var(--btn);color:#fff;padding:2px 7px;border-radius:999px}
+  .lv-st{font-size:11.5px;font-family:var(--mono);margin-top:2px}
+  .lv-st.active{color:var(--emerald-ink)} .lv-st.partial{color:#0369a1} .lv-st.developing{color:var(--amber-ink)}
+  .lv-edge{margin-top:16px;font-size:14px;line-height:1.6;color:#334155;background:#fffbeb;border:1px solid #fde68a;border-radius:11px;padding:12px 14px}
+  .lv-credit{margin-top:12px;font-size:11px;color:var(--dim)}
+  @media (max-width:600px){.lv-row{grid-template-columns:96px 1fr;gap:10px;padding:4px}}
+  /* Leadership */
+  .lead{border-top:3px solid var(--btn)}
+  .ld-badge{display:inline-block;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px}
+  .lead.emerging .ld-badge{background:#fef3c7;color:#b45309}
+  .lead.developing .ld-badge{background:#e0f2fe;color:#0369a1}
+  .lead.capable .ld-badge{background:#ede9fe;color:#6d28d9}
+  .lead.strong .ld-badge{background:#d1fae5;color:#047857}
+  .ld-steps{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .ld-step{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .ld-step span{width:100%;height:8px;border-radius:4px;background:#e5e7eb}
+  .ld-step.done span{background:var(--c);opacity:.45}
+  .ld-step.cur span{background:var(--c);height:12px;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--c)}
+  .ld-step small{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+  .ld-step.cur small{color:var(--text);font-weight:700}
+  .ld-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:2px}
+  .ld-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .ld-box{border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#334155;display:flex;flex-direction:column;gap:4px}
+  .ld-box b{font-size:11px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+  .ld-box.good{background:#ecfdf5;border:1px solid #a7f3d0}.ld-box.good b{color:#047857}
+  .ld-box.warn{background:#fffbeb;border:1px solid #fde68a}.ld-box.warn b{color:#b45309}
+  @media (max-width:600px){.ld-grid{grid-template-columns:1fr}}
   /* Hero emblems */
   .hero-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   .hero-mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;
@@ -281,7 +323,7 @@
       <span class="eyebrow">24-Hour Cognitive &amp; Behavioral Simulation</span>
       <h1>See how you <span class="accent">actually</span> think — not how you think you think.</h1>
     </div>
-    <p>You're about to live one ordinary day, compressed. Eight moments, from morning coffee to the last minute before sleep. There are no right answers to memorize — just choose what you would <em>genuinely</em> do. The mirror quietly maps the patterns underneath.</p>
+    <p>You're about to live one ordinary day — eight real moments, from morning tea to bedtime. There are no right or wrong answers. Just pick what you would <em>honestly</em> do. At the end, the mirror shows how you really think and where you stand on the Seven Levels of Consciousness.</p>
     <div class="meta-row">
       <div class="meta"><b>8</b><span>Moments</span></div>
       <div class="meta"><b>~3</b><span>Minutes</span></div>
@@ -392,6 +434,30 @@
       <p id="altText" style="margin-top:12px"></p>
     </div>
 
+    <div class="card levels">
+      <span class="eyebrow">Seven Levels of Consciousness · Where You Are</span>
+      <h2 id="lvlTitle" style="margin:8px 0 4px"></h2>
+      <div class="lv-sub" id="lvlTheme"></div>
+      <p id="lvlHere" style="margin:10px 0 16px"></p>
+      <div class="lv-ladder" id="lvlLadder"></div>
+      <div class="lv-edge" id="lvlEdge"></div>
+      <div class="lv-credit">Levels framework: Richard Barrett's Seven Levels of Consciousness model (Barrett Values Centre).</div>
+    </div>
+
+    <div class="card lead" id="ldCard">
+      <span class="eyebrow">Leadership Level · Barrett Leadership Model</span>
+      <h2 id="ldTitle" style="margin:8px 0 10px"></h2>
+      <span class="ld-badge" id="ldBadge"></span>
+      <p id="ldReady" style="margin:12px 0 14px"></p>
+      <div class="ld-steps" id="ldSteps"></div>
+      <div class="ld-scale"><span>Crisis Manager</span><span>Visionary</span></div>
+      <div class="ld-grid">
+        <div class="ld-box good"><b>Leadership strength</b><span id="ldStrength"></span></div>
+        <div class="ld-box warn"><b>Watch out for</b><span id="ldWatch"></span></div>
+      </div>
+      <div class="lv-credit">An indicator based on 8 everyday choices — useful for reflection and coaching, not a hiring or promotion decision on its own.</div>
+    </div>
+
     <div class="hero-row" id="resHeroes"></div>
 
     <div class="card grid2">
@@ -426,7 +492,8 @@
  *  WEBHOOK CONFIGURATION
  *  Paste your deployed Google Apps Script Web App URL below.
  *  Payload (JSON string, sent as text/plain for no-cors compatibility):
- *  { name, email, role, archetype, heroAlias, thinkerLevel, totalScore,
+ *  { name, email, role, archetype, heroAlias, thinkerLevel, consciousnessLevel,
+ *    leadershipLevel, leadershipReadiness, totalScore,
  *    noiseScore, patternScore, judgmentScore, metaScore, choicesLog }
  *  A full receiver script is in Code.gs (delivered alongside this file).
  *
@@ -566,54 +633,54 @@ const SVG = {
 /* ---------- Scenes ----------
  * intentionalFirst: varies button order so the intentional option is not always in the same slot. */
 const SCENES = [
-  { time:"8:15 AM", clock:"08:15 AM", title:"The Viral Trend", pillar:"noise", svg:SVG.phone, intentionalFirst:true,
-    text:"Over morning coffee, you see a bold viral post claiming a new tool or career shortcut is making everyone obsolete. Everyone in your feed is sharing it. What is your move?",
-    reactive:"Bookmark it immediately, feel a spike of urgency, and spend 30 minutes watching videos about it so you don't fall behind.",
-    intentional:"Pause, look at who is profiting from the hype, check one primary source to verify the facts, and return to your planned work.",
-    fbR:"Urgency is a common signal of noise: reacting to volume rather than verified signal tends to fragment focus for the rest of the morning.",
-    fbI:"Checking incentives and one primary source is a classic filtering move — it converts a feeling of urgency into a verifiable claim." },
-  { time:"10:30 AM", clock:"10:30 AM", title:"The Repeating Bottleneck", pillar:"pattern", svg:SVG.maze, intentionalFirst:false,
-    text:"A critical project you are leading stalls for the third time this quarter due to last-minute confusion from others. How do you respond?",
-    reactive:"Step in, work late to fix the mess yourself, and resolve to push people harder next time.",
-    intentional:"Step back and map the exact sequence of events to find the broken system or missing boundary causing this loop.",
-    fbR:"Heroic fixes solve the instance but leave the loop intact — a problem that repeats three times is usually structural, not effort-based.",
-    fbI:"Mapping the sequence treats recurrence as data, which is how systems thinkers locate the root constraint instead of the symptom." },
-  { time:"1:00 PM", clock:"01:00 PM", title:"The Uncomfortable Critique", pillar:"noise", svg:SVG.blueprint, intentionalFirst:false,
-    text:"You are building a new strategy you feel excited about. A sharp peer points out a major flaw that could make the whole plan fail. What happens next?",
-    reactive:"Defend your idea strongly and mentally dismiss their point because they don't see your full vision.",
-    intentional:"Ask them to break down the flaw further so you can test if your assumption actually holds up in reality.",
-    fbR:"Excitement about an idea often filters out disconfirming evidence — the critique gets treated as noise when it may be the signal.",
-    fbI:"Inviting the critique deeper separates your ego from the plan and turns an objection into a cheap, early stress test." },
-  { time:"3:15 PM", clock:"03:15 PM", title:"The Sudden Friction", pillar:"meta", svg:SVG.pool, intentionalFirst:true,
-    text:"You receive an unfair, dismissive message in front of colleagues that triggers immediate frustration and heat in your chest. How does this play out?",
-    reactive:"Type out a sharp, defensive reply right away to protect your reputation before the moment passes.",
-    intentional:"Notice the physical surge of anger, close the chat for 15 minutes, and respond later with cold, factual clarity.",
-    fbR:"Replies written at peak arousal tend to be judged by their tone rather than their content, which can cost more reputation than the original message.",
-    fbI:"Naming the bodily signal and inserting a delay is the core meta-cognitive skill: creating a gap between stimulus and response." },
-  { time:"5:00 PM", clock:"05:00 PM", title:"The Shiny Distraction", pillar:"judgment", svg:SVG.path, intentionalFirst:false,
-    text:"You are offered a flashy side task with high visibility and quick praise, though it adds zero long-term skill or leverage. What do you choose?",
-    reactive:"Accept it right away—it feels good to be wanted and gives an easy win this week.",
-    intentional:"Decline politely, protecting your calendar for deep, unglamorous work that compounds over three years.",
-    fbR:"Short-term recognition is real, but each non-compounding yes quietly reduces the hours available for work that builds leverage.",
-    fbI:"Asking what a choice compounds into — not how it feels this week — is the defining move of second-order judgment." },
-  { time:"7:30 PM", clock:"07:30 PM", title:"The Familiar Argument", pillar:"pattern", svg:SVG.circles, intentionalFirst:true,
-    text:"A familiar personal disagreement flares up at home—the exact same argument you had two months ago. How do you view it?",
-    reactive:"Focus on winning the point and explaining why the other person is being unreasonable again.",
-    intentional:"Recognize the emotional script you both follow and ask what unspoken rule or expectation triggers it.",
-    fbR:"Winning a recurring argument rarely ends it — the same script tends to replay until the underlying trigger is named.",
-    fbI:"Spotting the shared script reframes conflict as a pattern you can redesign together rather than a contest to win." },
-  { time:"9:00 PM", clock:"09:00 PM", title:"The Unexpected Free Hour", pillar:"judgment", svg:SVG.hourglass, intentionalFirst:true,
-    text:"Your evening plans cancel, leaving you with 60 completely unscheduled minutes before bed. What actually happens?",
-    reactive:"Default to scrolling feeds or watching clips to numb your brain until you feel sleepy.",
-    intentional:"Spend 40 minutes building or reading toward your long-term independent goal, then rest cleanly.",
-    fbR:"Unplanned time usually flows to the lowest-friction default, and those small defaults add up to most of a year's discretionary hours.",
-    fbI:"Small, protected blocks of self-directed effort are where long-term independence is quietly built — and the clean stop protects recovery." },
-  { time:"10:30 PM", clock:"10:30 PM", title:"The Silent Video Audit", pillar:"meta", svg:SVG.mirror, intentionalFirst:false,
-    text:"Imagine an objective observer watched a silent video of your entire day without hearing your explanations. What would they say drove your actions?",
-    reactive:"Urgency, notifications, and reacting to other people's expectations.",
-    intentional:"Clear personal rules, deliberate pauses, and self-chosen priorities.",
-    fbR:"Honestly naming what drives your behavior is itself a meta-cognitive act — awareness is the first step to changing the inputs.",
-    fbI:"Behavior that looks rule-driven from the outside indicates that your stated priorities are actually reaching your actions." }
+  { time:"8:15 AM", clock:"08:15 AM", title:"The Scary Forward", pillar:"noise", level:1, svg:SVG.phone, intentionalFirst:true,
+    text:"You're having your morning tea. A WhatsApp forward says AI will take away jobs like yours within a year. Your friends are sharing it, and you start worrying about your salary and EMIs. What do you do?",
+    reactive:"Panic a little, then watch videos about it for 30 minutes and feel worse — without actually doing anything.",
+    intentional:"Take a breath, check if the news comes from a real source, write down one skill you can start learning this month, and get on with your day.",
+    fbR:"Fear makes every forward feel urgent — worrying feels like action, but it changes nothing.",
+    fbI:"Checking the facts first and then taking one small step turns fear into a plan." },
+  { time:"10:30 AM", clock:"10:30 AM", title:"The Same Mistake Again", pillar:"pattern", level:3, svg:SVG.maze, intentionalFirst:false,
+    text:"At work, the monthly report your team sends is late again — the third time this quarter. Each time, someone misses a step at the last minute, and your manager is not happy. What do you do?",
+    reactive:"Stay late, fix it yourself, and tell the team to be more careful next time.",
+    intentional:"Sit with the team for 20 minutes, find the exact step where it keeps breaking, and make a simple checklist so it doesn't happen again.",
+    fbR:"Fixing it yourself saves today, but the same problem will come back next month.",
+    fbI:"When a problem keeps repeating, the process is broken — not the people — and fixing the process is real excellence." },
+  { time:"1:00 PM", clock:"01:00 PM", title:"The Honest Feedback", pillar:"noise", level:4, svg:SVG.blueprint, intentionalFirst:false,
+    text:"In a meeting, you share an idea you're really proud of. A colleague says in front of everyone, \"This won't work — and here's why.\" Part of you feels hurt. What happens next?",
+    reactive:"Defend your idea and quietly decide they just don't understand it.",
+    intentional:"Ask them to explain more, check whether they're right — and change your plan if they are.",
+    fbR:"When we love an idea, we stop hearing its problems, and that's how avoidable mistakes happen.",
+    fbI:"Being open to being wrong is how people grow the fastest." },
+  { time:"3:15 PM", clock:"03:15 PM", title:"The Rude Message", pillar:"meta", level:2, svg:SVG.pool, intentionalFirst:true,
+    text:"In the office WhatsApp group, a colleague replies to your message rudely — in front of everyone. You feel the anger rising. You'll still sit next to this person tomorrow. What do you do?",
+    reactive:"Reply immediately with an equally sharp message so nobody thinks you're weak.",
+    intentional:"Put the phone down for 15 minutes, reply calmly, and later talk to them one-on-one to sort it out.",
+    fbR:"Messages sent in anger usually hurt the relationship more than the original comment did.",
+    fbI:"Pausing before you reply protects both your image and the relationship." },
+  { time:"5:00 PM", clock:"05:00 PM", title:"The Easy Praise", pillar:"judgment", level:5, svg:SVG.path, intentionalFirst:false,
+    text:"Your boss asks you to organise the office celebration. Everyone will notice and praise you. But it will take up the evenings you had set aside for a course or project that really matters to you. What do you choose?",
+    reactive:"Say yes right away — it feels good to be noticed and appreciated.",
+    intentional:"Thank your boss, explain what you're working on, and offer smaller help instead — so you protect time for what truly matters to you.",
+    fbR:"Praise feels great for a day, but time taken away from what matters to you is hard to get back.",
+    fbI:"Choosing what matters to you over quick praise is what living by your own values looks like." },
+  { time:"7:30 PM", clock:"07:30 PM", title:"The Same Old Fight", pillar:"pattern", level:6, svg:SVG.circles, intentionalFirst:true,
+    text:"At home, the family argues again about the same thing — who does which chores, or how money is being spent. It's the same fight you had last month, and everyone is upset. How do you handle it?",
+    reactive:"Try to win the argument and prove that you are right this time.",
+    intentional:"Stop arguing about who's right, ask everyone to sit down, and agree on one simple rule that works for all.",
+    fbR:"Winning the argument doesn't end it — the same fight usually comes back.",
+    fbI:"Turning a fight into a shared agreement is how strong families and teams are built." },
+  { time:"9:00 PM", clock:"09:00 PM", title:"The Free Hour", pillar:"judgment", level:7, svg:SVG.hourglass, intentionalFirst:true,
+    text:"Your evening plan gets cancelled. Suddenly you have one free hour before bed. What actually happens?",
+    reactive:"Scroll Instagram or YouTube until you feel sleepy.",
+    intentional:"Spend 40 minutes on something bigger than you — teaching someone, helping a cause, or working on your long-term goal — then sleep on time.",
+    fbR:"Free time goes to the phone by default, and those hours quietly add up to weeks every year.",
+    fbI:"One hour given to something bigger than yourself is how a sense of purpose is built." },
+  { time:"10:30 PM", clock:"10:30 PM", title:"Looking Back at the Day", pillar:"meta", level:4, svg:SVG.mirror, intentionalFirst:false,
+    text:"Before you sleep, imagine someone watched a video of your whole day — with no sound, only your actions. What would they say was running your day?",
+    reactive:"My phone, deadlines, and what other people wanted from me.",
+    intentional:"My own priorities — I paused before reacting and chose what to do.",
+    fbR:"Being honest about this is the first step to changing it.",
+    fbI:"When your actions match your own priorities, you are the one running your day." }
 ];
 
 /* ---------- Results content ---------- */
@@ -667,20 +734,20 @@ function pillarIcon(k, col){
 document.getElementById("introHeroes").innerHTML = heroRow(null);
 const BLIND = {
   noise: {
-    text:"Your attention is most easily captured by urgency, hype, and emotionally loaded information — including criticism of your own ideas. When signal and noise arrive with the same intensity, you tend to act on volume rather than verification.",
-    rule:"<b>IF</b> I feel a spike of urgency from something I just read or heard,<br><b>THEN</b> I write down the core claim in one line, find one primary source, and wait 10 minutes before taking any action on it."
+    text:"You get pulled in by urgent news, hype and strong emotions — even when someone criticises your ideas. When everything feels loud, you tend to react to what's loudest instead of what's true.",
+    rule:"<b>IF</b> I feel a sudden urge to act on something I just read or heard,<br><b>THEN</b> I write down the main claim in one line, check one reliable source, and wait 10 minutes before doing anything."
   },
   pattern: {
-    text:"You tend to solve each problem as a fresh, isolated event rather than as one instance of a recurring loop. This keeps you busy and responsive, but the same bottlenecks and conflicts keep returning because the underlying structure is never redesigned.",
-    rule:"<b>IF</b> the same problem, delay, or argument shows up for the second time,<br><b>THEN</b> I stop fixing it and spend 10 minutes writing out the exact sequence of events that led to it — and name one rule or boundary that would break the loop."
+    text:"You tend to fix each problem as if it's new, instead of noticing it's the same problem coming back. You stay busy, but the same delays and arguments keep returning.",
+    rule:"<b>IF</b> the same problem, delay or argument happens a second time,<br><b>THEN</b> I stop and spend 10 minutes writing down what happened step by step — and pick one rule that would stop it next time."
   },
   judgment: {
-    text:"Your choices tend to be optimized for how they feel this week rather than what they compound into over years. Visible wins and easy comfort quietly crowd out the unglamorous, high-leverage work that builds long-term independence.",
-    rule:"<b>IF</b> I'm offered a new task or find myself with unplanned free time,<br><b>THEN</b> I ask, \"Will this still matter in 3 years?\" — and if the answer is no, I decline or redirect at least 30 minutes to my long-term goal."
+    text:"You often pick what feels good this week over what helps you in the long run. Quick praise and easy comfort slowly push out the work that really builds your future.",
+    rule:"<b>IF</b> I'm offered a new task or suddenly get free time,<br><b>THEN</b> I ask, \"Will this matter in 3 years?\" — and if not, I say no or give at least 30 minutes to my long-term goal."
   },
   meta: {
-    text:"You have limited real-time visibility into what is driving your behavior in the moment, especially under emotional pressure. Without that observer's view, strong feelings and external demands tend to make your decisions for you.",
-    rule:"<b>IF</b> I notice heat, tension, or a racing urge to respond,<br><b>THEN</b> I name the feeling silently (\"this is anger\"), take three slow breaths, and wait at least 15 minutes before replying or deciding."
+    text:"In the moment, you don't always notice what's driving you — especially when you're upset or rushed. Without that pause, strong feelings and other people's demands end up making your choices.",
+    rule:"<b>IF</b> I feel angry, tense or in a rush to reply,<br><b>THEN</b> I name the feeling to myself (\"this is anger\"), take three slow breaths, and wait 15 minutes before replying or deciding."
   }
 };
 
@@ -707,6 +774,106 @@ function totalScore(){ return PILLAR_ORDER.reduce((a,k)=>a+state.scores[k],0); }
 function getArchetype(t){ return ARCHETYPES.find(a=>t>=a.min && t<=a.max) || ARCHETYPES[0]; }
 /* Thinking altitude: Levels 1–2 (8–17 pts) = Low-Level, Levels 3–4 (18–24 pts) = High-Level */
 function thinkerLevel(t){ return t >= 18 ? "High-Level Thinker" : "Low-Level Thinker"; }
+
+/* ---------- Seven Levels of Consciousness (after Richard Barrett / Barrett Values Centre) ----------
+ * Each scene is tagged with one level. Overall level comes from the number of intentional choices:
+ * Levels 1–3 = self-interest (Low-Level Thinker), Level 4 = transformation, Levels 5–7 = common good. */
+const LEVELS = {
+  1:{ name:"Viability",     theme:"Ensuring Stability",      color:"#c1272d", traits:"Financial stability, safety, health",
+      here:"Right now, most of your energy goes into feeling safe — money, job security and keeping up. That's natural, but when fear makes the decisions, it's hard to think clearly or grow." },
+  2:{ name:"Relationships", theme:"Building Relationships",  color:"#f26b21", traits:"Connection, respect, listening, open communication",
+      here:"You care a lot about getting along and being accepted by people around you. The next step is keeping good relationships without letting anger or approval decide what you do." },
+  3:{ name:"Performance",   theme:"Achieving Excellence",    color:"#e8a10c", traits:"Quality, results, competence, efficiency",
+      here:"You're driven by doing good work and being recognised for it. The next step is fixing the systems behind the work, not just working harder." },
+  4:{ name:"Evolution",     theme:"Courageously Evolving",   color:"#6aa82a", traits:"Accountability, learning, innovation, autonomy",
+      here:"You're at the turning point — open to feedback, owning your choices and willing to change. This is where people move from \"what's in it for me\" to \"what's best for everyone\"." },
+  5:{ name:"Alignment",     theme:"Authentic Expression",    color:"#0f9f97", traits:"Integrity, honesty, trust, passion, meaning",
+      here:"Your choices are guided more by your own values than by praise or pressure. The next step is using that clarity to make a difference together with other people." },
+  6:{ name:"Collaboration", theme:"Cultivating Communities", color:"#2f6db5", traits:"Partnership, mentoring, community involvement",
+      here:"You think beyond yourself — you bring people to agreement and help others grow. The next step is linking this to a long-term purpose bigger than any one job." },
+  7:{ name:"Contribution",  theme:"Living Purpose",          color:"#6b3fa0", traits:"Service, vision, future generations, long-term perspective",
+      here:"Your day shows a life led by purpose — calm, values-driven and focused on giving back. Your work now is staying consistent, especially under pressure." }
+};
+const LEVEL_BY_COUNT = [1,1,2,3,3,4,5,6,7]; // index = number of intentional choices (0–8)
+function consciousnessLevel(){ return LEVEL_BY_COUNT[intentionalCount()]; }
+function levelLabel(l){ return `Level ${l}: ${LEVELS[l].name}`; }
+function levelStatus(l){
+  const picks = SCENES.map((s,i)=>s.level===l ? state.choicesLog[i] : null).filter(Boolean);
+  const good = picks.filter(c=>c.endsWith("Intentional")).length;
+  return good===picks.length ? "active" : good===0 ? "developing" : "partial";
+}
+function growthEdge(){
+  for(let l=1;l<=7;l++) if(levelStatus(l)!=="active") return l;
+  return null;
+}
+/* ---------- Barrett Seven Levels of Leadership Consciousness ---------- */
+const LEAD = {
+  1:{ name:"Crisis Manager",           strengths:"Stays calm and practical in a crisis. Keeps money, safety and rules under control.",
+      watch:"May try to control everything, find it hard to delegate, and be slow to build trust." },
+  2:{ name:"Relationship Manager",     strengths:"Good with people — communicates well, sorts out conflicts, and gives praise and feedback.",
+      watch:"May avoid difficult conversations, play favourites, or resist new people and new ideas." },
+  3:{ name:"Manager / Organiser",      strengths:"Organised and logical — builds systems, plans well, tracks numbers and cares about quality.",
+      watch:"May chase status or power, add red tape, get pulled into office politics, or overwork." },
+  4:{ name:"Facilitator / Influencer", strengths:"Asks for advice, builds agreement, and gives people room to learn and try new ideas.",
+      watch:"Still working through old fears — of failing, or of not being recognised enough." },
+  5:{ name:"Integrator / Inspirer",    strengths:"Creates a shared vision, acts with integrity, and builds a fair, open team where people want to give their best.",
+      watch:"Vision needs strong basics underneath — without follow-through, people lose trust." },
+  6:{ name:"Mentor / Partner",         strengths:"Coaches and develops people, builds partnerships, and thinks about the wider community.",
+      watch:"Must keep holding people accountable while being supportive." },
+  7:{ name:"Visionary",                strengths:"Sees the big picture, serves the team and society, and leads with patience and humility.",
+      watch:"Must stay connected to day-to-day realities and the people doing the work." }
+};
+function leadershipReadiness(){
+  const l = consciousnessLevel();
+  const weakBase = [1,2,3].find(x=>levelStatus(x)!=="active");
+  if(l <= 3) return { key:"emerging", label:"Emerging Leader",
+    text:"Right now, the focus is on leading yourself — handling pressure, people and results consistently. Leading others will come more naturally once these basics are strong." };
+  if(l === 4) return { key:"developing", label:"Developing Leader",
+    text:"Ready to lead small teams or projects, especially with a mentor's support. The shift from \"me\" to \"we\" has clearly started." };
+  if(weakBase) return { key:"capable", label:"Capable Leader — strengthen the basics",
+    text:`Has the values and vision to lead others well. Strengthen Level ${weakBase} (${LEVELS[weakBase].name}) so your team can rely on you under pressure too.` };
+  return { key:"strong", label:"Strong Leadership Potential",
+    text:"Shows the self-control, values and long-term thinking that people trust and follow. Ready to lead teams and to grow other leaders." };
+}
+function leadershipLabel(){ const l = consciousnessLevel(); return `Level ${l}: ${LEAD[l].name}`; }
+function renderLeadership(){
+  const l = consciousnessLevel(), r = leadershipReadiness();
+  const weak = [1,2,3].find(x=>levelStatus(x)!=="active");
+  $("ldCard").className = `card lead ${r.key}`;
+  $("ldTitle").innerHTML = `Level ${l} Leader: <span style="color:${LEVELS[l].color}">${LEAD[l].name}</span>`;
+  $("ldBadge").textContent = r.label;
+  $("ldReady").textContent = r.text;
+  $("ldStrength").textContent = LEAD[l].strengths;
+  $("ldWatch").textContent = weak && weak < l ? `From Level ${weak} (${LEAD[weak].name}): ${LEAD[weak].watch}` : LEAD[l].watch;
+  $("ldSteps").innerHTML = [1,2,3,4,5,6,7].map(x=>`<div class="ld-step ${x===l?'cur':''} ${x<l?'done':''}" style="--c:${LEVELS[x].color}" title="Level ${x}: ${LEAD[x].name}">
+    <span></span><small>${x}</small></div>`).join("");
+}
+
+function renderLevels(){
+  const cur = consciousnessLevel(), edge = growthEdge();
+  const lv = LEVELS[cur];
+  $("lvlTitle").innerHTML = `Level ${cur}: <span style="color:${lv.color}">${lv.name}</span>`;
+  $("lvlTheme").textContent = `${lv.theme} — ${lv.traits}`;
+  $("lvlHere").textContent = lv.here;
+  const widths = {7:100,6:78,5:56,4:0,3:56,2:78,1:100};
+  let html = "";
+  for(let l=7;l>=1;l--){
+    const L = LEVELS[l], st = levelStatus(l), isCur = l===cur;
+    const shape = l===4 ? `<div class="lv-circle" style="${isCur?`background:${L.color}22;border-color:${L.color}`:''}"></div>`
+      : `<div class="lv-shape ${l>4?'top':'bot'}" style="width:${widths[l]}%;${isCur?`background:${L.color}2e`:''}"></div>`;
+    const stTxt = st==="active" ? "✓ Active" : st==="partial" ? "◐ Partly active" : "○ Developing";
+    html += `<div class="lv-row ${isCur?'cur':''} ${l>cur?'above':''}">
+      <div class="lv-vis">${shape}<span class="lv-num" style="background:${L.color}">${l}</span></div>
+      <div class="lv-txt">
+        <div class="lv-name"><b style="color:${L.color}">${L.name}</b><span class="lv-theme">${L.theme}</span>${isCur?'<span class="you">YOU ARE HERE</span>':''}</div>
+        <div class="lv-st ${st}">${stTxt}${l===edge?' · <b>growth edge</b>':''}</div>
+      </div></div>`;
+  }
+  $("lvlLadder").innerHTML = html;
+  $("lvlEdge").innerHTML = edge
+    ? `<b>Your growth edge: Level ${edge} — ${LEVELS[edge].name}.</b> The higher levels stay shaky until this one is strong — so start here.`
+    : `<b>All seven levels showed up in your choices today.</b> Your work now is to stay this way under pressure.`;
+}
 function intentionalCount(){ return state.choicesLog.filter(c=>c.endsWith("Intentional")).length; }
 function lowestPillar(){
   // Ties broken by pillar order (Noise → Pattern → Judgment → Meta)
@@ -786,6 +953,9 @@ function buildPayload(name, email, role){
     archetype: `${getArchetype(t).level}: ${getArchetype(t).name}`,
     heroAlias: getArchetype(t).hero,
     thinkerLevel: thinkerLevel(t),
+    consciousnessLevel: levelLabel(consciousnessLevel()),
+    leadershipLevel: leadershipLabel(),
+    leadershipReadiness: leadershipReadiness().label,
     totalScore: t,
     noiseScore: state.scores.noise,
     patternScore: state.scores.pattern,
@@ -885,6 +1055,8 @@ function renderResults(){
   em.innerHTML = emblemSVG(arch.emblem);
   em.classList.remove("badge-pop"); void em.offsetWidth; em.classList.add("badge-pop");
   $("resHeroes").innerHTML = heroRow(ARCHETYPES.indexOf(arch));
+  renderLevels();
+  renderLeadership();
 
   const high = t >= 18, n = intentionalCount();
   $("altCard").className = `card altitude ${high?'high':'low'}`;
@@ -926,6 +1098,8 @@ function archetypeCardText(){
     `Archetype: ${arch.level}: ${arch.name}`,
     `Hero Alias: ${arch.hero}`,
     `Thinking Altitude: ${thinkerLevel(t)}`,
+    `Consciousness Level: ${levelLabel(consciousnessLevel())} (${LEVELS[consciousnessLevel()].theme})`,
+    `Leadership Level: ${leadershipLabel()} — ${leadershipReadiness().label}`,
     `Total Score: ${t}/24`,
     ``,
     `• Noise Filtering: ${state.scores.noise}/6`,
