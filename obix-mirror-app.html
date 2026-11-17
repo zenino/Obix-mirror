@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="theme-color" content="#f5f7fb">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Obix Mirror: 24-Hour Cognitive &amp; Behavioral Simulation</title>
+<meta name="description" content="A 24-hour cognitive simulation that uncovers your real thinking baseline.">
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --card2:#f4f7fb; --border:#e2e8f0;
+    --cyan:#0ea5e9; --cyan-ink:#0369a1; --btn:#0284c7;
+    --emerald:#059669; --emerald-ink:#047857; --amber:#d97706; --amber-ink:#b45309;
+    --text:#0f172a; --muted:#475569; --dim:#94a3b8;
+    --radius:16px;
+    --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased}
+  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    background:
+      radial-gradient(900px 500px at 85% -10%, rgba(14,165,233,.10), transparent 60%),
+      radial-gradient(700px 400px at -10% 110%, rgba(5,150,105,.07), transparent 60%),
+      var(--bg);}
+  button,input,select{font-family:inherit}
+  .shell{width:100%;max-width:720px;padding:20px 18px 48px;flex:1;display:flex;flex-direction:column}
+
+  /* Top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 18px;gap:12px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:.02em;font-size:14px}
+  .brand-mark{width:26px;height:26px}
+  .brand small{display:block;color:var(--dim);font-weight:500;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  .clock{font-family:var(--mono);font-size:13px;color:var(--cyan-ink);border:1px solid var(--border);
+    background:var(--card2);padding:6px 10px;border-radius:999px;opacity:0;transition:opacity .4s}
+  .clock.on{opacity:1}
+
+  /* Progress */
+  .progress{height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:22px;opacity:0;transition:opacity .4s}
+  .progress.on{opacity:1}
+  .progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--emerald));transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+  /* Screens */
+  .screen{display:none;flex-direction:column;gap:18px;animation:enter .55s cubic-bezier(.2,.8,.2,1) both}
+  .screen.active{display:flex}
+  .screen.leaving{animation:leave .3s ease both}
+  @keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes leave{to{opacity:0;transform:translateY(-10px)}}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;box-shadow:0 1px 2px rgba(15,23,42,.04),0 10px 30px rgba(15,23,42,.05)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan-ink)}
+  h1{font-size:clamp(28px,6vw,40px);line-height:1.1;letter-spacing:-.02em;font-weight:700}
+  h2{font-size:clamp(21px,4.4vw,26px);line-height:1.2;letter-spacing:-.01em;font-weight:650}
+  h3{font-size:15px;font-weight:600}
+  p{color:var(--muted);line-height:1.6;font-size:15.5px}
+  .accent{color:var(--btn)}
+
+  /* Intro */
+  .intro-hero{display:flex;justify-content:center;padding:8px 0}
+  .intro-hero svg{width:min(260px,70vw);height:auto}
+  .meta-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .meta{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center}
+  .meta b{display:block;font-size:20px;color:var(--text);font-weight:650}
+  .meta span{font-size:11.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+
+  .btn{appearance:none;border:1px solid var(--btn);background:var(--btn);color:#ffffff;font-weight:650;
+    font-size:15.5px;padding:15px 22px;border-radius:12px;cursor:pointer;transition:transform .15s,box-shadow .25s,background .2s;width:100%}
+  .btn:hover{box-shadow:0 0 0 4px rgba(2,132,199,.15),0 8px 24px rgba(2,132,199,.25)}
+  .btn:active{transform:scale(.985)}
+  .btn.ghost{background:transparent;color:var(--text);border-color:var(--border)}
+  .btn.ghost:hover{border-color:var(--cyan);box-shadow:none}
+  .btn:disabled{opacity:.6;cursor:default}
+  .linkbtn{background:none;border:none;color:var(--dim);font-size:13.5px;cursor:pointer;text-decoration:underline;
+    text-underline-offset:3px;padding:6px;align-self:center}
+  .linkbtn:hover{color:var(--muted)}
+
+  /* Scene */
+  .scene-visual{background:linear-gradient(180deg,#f8fbff,#eef4fb);border:1px solid var(--border);border-radius:var(--radius);
+    display:flex;justify-content:center;align-items:center;padding:18px;overflow:hidden;position:relative}
+  .scene-visual::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 70% at 50% 50%,transparent 50%,rgba(244,247,251,.45));pointer-events:none}
+  .scene-visual svg{width:100%;max-width:360px;height:auto;display:block}
+  .scene-head{display:flex;flex-direction:column;gap:8px}
+  .scene-tag{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+    border:1px solid var(--border);color:var(--muted);background:var(--card2)}
+  .chip.time{color:var(--cyan-ink);border-color:rgba(56,189,248,.35)}
+  .scenario{font-size:16.5px;color:#334155;line-height:1.65}
+  .choices{display:flex;flex-direction:column;gap:12px}
+  .choice{appearance:none;text-align:left;width:100%;background:var(--card);box-shadow:0 1px 2px rgba(15,23,42,.04);border:1px solid var(--border);border-radius:14px;
+    padding:16px 18px;color:var(--text);font-size:15.5px;line-height:1.55;cursor:pointer;display:flex;gap:14px;align-items:flex-start;
+    transition:border-color .2s,background .2s,transform .15s,opacity .3s}
+  .choice:hover:not(:disabled){border-color:rgba(56,189,248,.6);background:#f0f9ff}
+  .choice:active:not(:disabled){transform:scale(.99)}
+  .choice:disabled{cursor:default}
+  .choice .key{flex:0 0 auto;font-family:var(--mono);font-size:12px;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    border:1px solid var(--border);color:var(--muted);margin-top:1px}
+  .choice.picked{border-color:var(--cyan);background:rgba(56,189,248,.06)}
+  .choice.picked .key{background:var(--btn);color:#ffffff;border-color:var(--btn)}
+  .choice.faded{opacity:.35}
+
+  .feedback{display:none;gap:12px;align-items:flex-start;background:var(--card2);border:1px solid var(--border);border-left:3px solid var(--cyan);
+    border-radius:12px;padding:14px 16px;animation:enter .35s ease both}
+  .feedback.on{display:flex}
+  .feedback .dot{flex:0 0 8px;height:8px;border-radius:50%;background:var(--cyan);margin-top:7px;box-shadow:0 0 10px var(--cyan)}
+  .feedback p{color:#334155;font-size:14.5px}
+  .feedback .timer{height:2px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+  .feedback .timer span{display:block;height:100%;background:var(--cyan);width:100%}
+  .feedback.on .timer span{animation:drain 1.5s linear forwards}
+  @keyframes drain{to{width:0}}
+
+  /* Form */
+  .form{display:flex;flex-direction:column;gap:16px}
+  .field{display:flex;flex-direction:column;gap:7px}
+  .field label{font-size:13px;color:var(--muted);font-weight:500}
+  .field label i{color:var(--amber);font-style:normal}
+  .field input,.field select{appearance:none;background:var(--card2);border:1px solid var(--border);border-radius:11px;color:var(--text);
+    font-size:15.5px;padding:13px 14px;outline:none;transition:border-color .2s,box-shadow .2s;width:100%}
+  .field select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+    background-position:calc(100% - 20px) 55%,calc(100% - 15px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:40px}
+  .field input:focus,.field select:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(56,189,248,.15)}
+  .field input.invalid{border-color:var(--amber)}
+  .err{font-size:12.5px;color:var(--amber-ink);min-height:0}
+  .note{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--dim);line-height:1.55;
+    background:var(--card2);border:1px dashed var(--border);border-radius:11px;padding:12px 14px}
+  .note svg{flex:0 0 16px;margin-top:2px}
+  .lock-hero{display:flex;justify-content:center}
+  .lock-hero svg{width:120px;height:auto}
+
+  /* Results */
+  .archetype{display:flex;flex-direction:column;gap:6px;padding:22px 24px;border-radius:var(--radius);
+    background:linear-gradient(135deg,#e0f2fe,#ecfdf5);border:1px solid #bae6fd}
+  .archetype .lvl{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan-ink)}
+  .archetype .name{font-size:clamp(22px,5vw,28px);font-weight:700;letter-spacing:-.01em}
+  .score-line{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+  .score-line b{font-size:34px;font-weight:700}
+  .score-line span{color:var(--muted);font-size:14px}
+  .scale{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:10px}
+  .scale div{height:5px;border-radius:3px;background:var(--border)}
+  .scale div.on{background:var(--cyan)}
+  .scale-labels{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;font-size:10.5px;color:var(--dim);font-family:var(--mono)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .radar-wrap{display:flex;justify-content:center;align-items:center}
+  .radar-wrap svg{width:100%;max-width:340px;height:auto;overflow:visible}
+  .radar-poly{transform-origin:170px 160px;animation:grow 1s cubic-bezier(.2,.8,.2,1) .2s both}
+  @keyframes grow{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+  .pillars{display:flex;flex-direction:column;gap:14px;justify-content:center}
+  .pillar-row{display:flex;flex-direction:column;gap:6px}
+  .pillar-row .top{display:flex;justify-content:space-between;font-size:13.5px}
+  .pillar-row .top > span:last-child{font-family:var(--mono);color:var(--muted)}
+  .bar{height:6px;background:var(--border);border-radius:4px;overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:4px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1) .3s}
+  .blind{border-left:3px solid var(--amber)}
+  .blind .eyebrow{color:var(--amber-ink)}
+  .rule{border-left:3px solid var(--emerald)}
+  .rule .eyebrow{color:var(--emerald-ink)}
+  .rule-box{font-family:var(--mono);font-size:14px;line-height:1.7;background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:14px 16px;color:#1e293b}
+  .rule-box b{color:var(--emerald-ink);font-weight:600}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  /* Thinking altitude */
+  .alt-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:6px 0 16px}
+  .alt-pill{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;padding:5px 10px;border-radius:999px}
+  .altitude.low .alt-pill{background:#fef3c7;color:#b45309}
+  .altitude.high .alt-pill{background:#d1fae5;color:#047857}
+  .altitude.low{border-top:3px solid var(--amber)}
+  .altitude.high{border-top:3px solid var(--emerald)}
+  .gauge{position:relative;height:34px}
+  .gauge-track{position:absolute;left:0;right:0;top:20px;height:10px;border-radius:6px;
+    background:linear-gradient(90deg,#fbbf24 0%,#fde68a 58%,#a7f3d0 66%,#10b981 100%)}
+  .gauge-mid{position:absolute;left:62.5%;top:-4px;bottom:-4px;width:2px;background:#0f172a;opacity:.25}
+  .gauge-marker{position:absolute;top:0;left:0;transform:translateX(-50%);transition:left 1.1s cubic-bezier(.2,.8,.2,1) .3s;display:flex;flex-direction:column;align-items:center}
+  .gauge-marker span{font-family:var(--mono);font-size:11px;font-weight:700;background:#0f172a;color:#fff;padding:2px 7px;border-radius:6px;position:relative}
+  .gauge-marker span::after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%);border:5px solid transparent;border-bottom:0;border-top-color:#0f172a}
+  .gauge-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);font-family:var(--mono);margin-top:8px}
+  /* Seven levels */
+  .lv-sub{font-size:13px;color:var(--muted);font-weight:500}
+  .lv-ladder{display:flex;flex-direction:column;gap:6px}
+  .lv-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;padding:4px 8px;border-radius:12px;transition:background .3s}
+  .lv-row.cur{background:#f0f9ff;outline:1px solid #bae6fd}
+  .lv-row.above{opacity:.6}
+  .lv-vis{position:relative;height:40px;display:flex;align-items:center;justify-content:center}
+  .lv-shape{height:38px;background:#e5e7eb}
+  .lv-shape.top{clip-path:polygon(0 0,100% 0,86% 100%,14% 100%)}
+  .lv-shape.bot{clip-path:polygon(14% 0,86% 0,100% 100%,0 100%)}
+  .lv-circle{width:40px;height:40px;border-radius:50%;background:#e5e7eb;border:2px solid #e5e7eb}
+  .lv-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;color:#fff;
+    font-weight:700;font-size:13px;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+  .lv-name{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px}
+  .lv-theme{font-size:11.5px;color:var(--dim)}
+  .you{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;background:var(--btn);color:#fff;padding:2px 7px;border-radius:999px}
+  .lv-st{font-size:11.5px;font-family:var(--mono);margin-top:2px}
+  .lv-st.active{color:var(--emerald-ink)} .lv-st.partial{color:#0369a1} .lv-st.developing{color:var(--amber-ink)}
+  .lv-edge{margin-top:16px;font-size:14px;line-height:1.6;color:#334155;background:#fffbeb;border:1px solid #fde68a;border-radius:11px;padding:12px 14px}
+  .lv-credit{margin-top:12px;font-size:11px;color:var(--dim)}
+  @media (max-width:600px){.lv-row{grid-template-columns:96px 1fr;gap:10px;padding:4px}}
+  /* Leadership */
+  .lead{border-top:3px solid var(--btn)}
+  .ld-badge{display:inline-block;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px}
+  .lead.emerging .ld-badge{background:#fef3c7;color:#b45309}
+  .lead.developing .ld-badge{background:#e0f2fe;color:#0369a1}
+  .lead.capable .ld-badge{background:#ede9fe;color:#6d28d9}
+  .lead.strong .ld-badge{background:#d1fae5;color:#047857}
+  .ld-theme{font-size:12px;font-weight:600;font-style:italic;margin-top:1px}
+  .ld-steps{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .ld-step{display:flex;flex-direction:column;align-items:center;gap:5px}
+  .ld-step span{width:100%;height:8px;border-radius:4px;background:#e5e7eb}
+  .ld-step.done span{background:var(--c);opacity:.45}
+  .ld-step.cur span{background:var(--c);height:12px;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--c)}
+  .ld-step small{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+  .ld-step.cur small{color:var(--text);font-weight:700}
+  .ld-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--dim);font-family:var(--mono);margin-top:2px}
+  .ld-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .ld-box{border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.55;color:#334155;display:flex;flex-direction:column;gap:4px}
+  .ld-box b{font-size:11px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+  .ld-box.good{background:#ecfdf5;border:1px solid #a7f3d0}.ld-box.good b{color:#047857}
+  .ld-box.warn{background:#fffbeb;border:1px solid #fde68a}.ld-box.warn b{color:#b45309}
+  @media (max-width:600px){.ld-grid{grid-template-columns:1fr}}
+  /* Hero emblems */
+  .hero-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .hero-mini{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .hero-mini svg{width:46px;height:46px}
+  .hero-mini b{font-size:12.5px;font-weight:650;line-height:1.2}
+  .hero-mini span{font-size:10px;color:var(--dim);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+  .hero-mini.me{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(14,165,233,.15)}
+  .hero-mini.dim{opacity:.45}
+  .arch-top{display:flex;gap:16px;align-items:center}
+  .arch-top .emblem{flex:0 0 84px;width:84px;height:84px;filter:drop-shadow(0 8px 14px rgba(15,23,42,.18))}
+  .arch-top .emblem svg{width:100%;height:100%}
+  .alias{font-size:13px;color:var(--muted);font-style:italic}
+  .pillar-row .top .pl{display:flex;align-items:center;gap:8px}
+  .pi{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;flex:0 0 26px}
+  .pi svg{width:15px;height:15px}
+  .power{font-size:11px;color:var(--dim);font-family:var(--mono);letter-spacing:.04em}
+  .badge-pop{animation:pop .7s cubic-bezier(.2,1.4,.4,1) .15s both}
+  @keyframes pop{from{transform:scale(.4) rotate(-12deg);opacity:0}to{transform:none;opacity:1}}
+  @media (max-width:600px){.hero-mini b{font-size:11.5px}.hero-mini svg{width:40px;height:40px}.arch-top .emblem{flex-basis:70px;width:70px;height:70px}}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--card);border:1px solid var(--emerald);
+    color:var(--text);padding:11px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:all .3s;z-index:20}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+  footer{color:var(--dim);font-size:12px;text-align:center;padding:24px 0 10px}
+
+  /* SVG animation classes */
+  .a-pulse{animation:pulse 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .a-spin{animation:spin 14s linear infinite;transform-box:view-box}
+  .a-spin-r{animation:spin 18s linear infinite reverse;transform-box:view-box}
+  .a-float{animation:float 4s ease-in-out infinite}
+  .a-flicker{animation:flicker 3s steps(1) infinite}
+  .a-glow{animation:glow 3s ease-in-out infinite}
+  .a-ripple{animation:ripple 3s ease-out infinite;transform-box:fill-box;transform-origin:center;opacity:0}
+  .a-ripple.d2{animation-delay:1s}.a-ripple.d3{animation-delay:2s}
+  .a-strike{animation:strike 3s ease-in-out infinite}
+  .a-scan{animation:scan 5s ease-in-out infinite}
+  .a-dash{stroke-dasharray:6 8;animation:dash 2s linear infinite}
+  .a-split-l{animation:splitL 4s ease-in-out infinite alternate}
+  .a-split-r{animation:splitR 4s ease-in-out infinite alternate}
+  .a-sand{animation:sand 3s linear infinite}
+  .a-blink{animation:blink 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .a-step{animation:step 3.2s linear infinite;opacity:0}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.06);opacity:1}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes flicker{0%,100%{opacity:1}42%{opacity:.35}44%{opacity:1}70%{opacity:.6}72%{opacity:1}}
+  @keyframes glow{0%,100%{opacity:.45}50%{opacity:1}}
+  @keyframes ripple{0%{transform:scale(.3);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+  @keyframes strike{0%,60%,100%{opacity:.15}62%,70%{opacity:1}66%{opacity:.4}}
+  @keyframes scan{0%,100%{transform:translate(0,0)}50%{transform:translate(70px,18px)}}
+  @keyframes dash{to{stroke-dashoffset:-28}}
+  @keyframes splitL{0%,20%{transform:translateX(0)}80%,100%{transform:translateX(-26px)}}
+  @keyframes splitR{0%,20%{transform:translateX(0)}80%,100%{transform:translateX(26px)}}
+  @keyframes sand{0%{transform:translateY(-6px);opacity:0}20%{opacity:1}100%{transform:translateY(18px);opacity:0}}
+  @keyframes blink{0%,46%,54%,100%{transform:scaleY(1)}50%{transform:scaleY(.1)}}
+  @keyframes step{0%{opacity:0}10%{opacity:1}60%{opacity:1}75%,100%{opacity:0}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;animation-iteration-count:1!important;transition:none!important}}
+
+  @media (max-width:600px){
+    .shell{padding:14px 14px 36px}
+    .card{padding:18px}
+    .grid2{grid-template-columns:1fr}
+    .actions{grid-template-columns:1fr}
+    .meta b{font-size:17px}
+    .scenario{font-size:15.5px}
+    .choice{font-size:15px;padding:14px 15px}
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" stroke="#0ea5e9" stroke-width="1.6"/>
+        <circle cx="16" cy="16" r="6.5" stroke="#0ea5e9" stroke-width="1.6" opacity=".55"/>
+        <circle cx="16" cy="16" r="2" fill="#0ea5e9"/>
+      </svg>
+      <div>The Obix Mirror<small>Cognitive Simulation</small></div>
+    </div>
+    <div class="clock" id="clock">08:15 AM</div>
+  </header>
+  <div class="progress" id="progress"><span id="progressBar"></span></div>
+
+  <!-- INTRO -->
+  <section class="screen active" id="screen-intro">
+    <div class="intro-hero">
+      <svg viewBox="0 0 260 200" fill="none" aria-hidden="true">
+        <g class="a-spin" style="transform-origin:130px 100px">
+          <circle cx="130" cy="100" r="88" stroke="#cbd5e1" stroke-dasharray="2 6"/>
+          <circle cx="130" cy="12" r="3.5" fill="#0ea5e9"/>
+        </g>
+        <g class="a-spin-r" style="transform-origin:130px 100px">
+          <circle cx="130" cy="100" r="66" stroke="#cbd5e1"/>
+          <circle cx="196" cy="100" r="3" fill="#059669"/>
+          <circle cx="64" cy="100" r="3" fill="#d97706"/>
+        </g>
+        <path d="M130 52 C 98 52 76 76 76 100 C 76 124 98 148 130 148 C 162 148 184 124 184 100 C 184 76 162 52 130 52Z" fill="#ffffff" stroke="#0ea5e9" stroke-width="1.5"/>
+        <g class="a-glow">
+          <path d="M100 100 H160 M130 70 V130" stroke="#0ea5e9" stroke-width="1" opacity=".35"/>
+          <circle cx="130" cy="100" r="22" stroke="#0ea5e9" stroke-width="1.5"/>
+        </g>
+        <circle cx="130" cy="100" r="8" fill="#0ea5e9" class="a-pulse"/>
+      </svg>
+    </div>
+    <div class="scene-head">
+      <span class="eyebrow">24-Hour Cognitive &amp; Behavioral Simulation</span>
+      <h1>See how you <span class="accent">actually</span> think — not how you think you think.</h1>
+    </div>
+    <p>You're about to live one ordinary day — eight real moments, from morning tea to bedtime. There are no right or wrong answers. Just pick what you would <em>honestly</em> do. At the end, the mirror shows how you really think and where you stand on the Seven Levels of Consciousness.</p>
+    <div class="meta-row">
+      <div class="meta"><b>8</b><span>Moments</span></div>
+      <div class="meta"><b>~3</b><span>Minutes</span></div>
+      <div class="meta"><b>4</b><span>Hidden pillars</span></div>
+    </div>
+    <div class="scene-head" style="gap:10px">
+      <span class="eyebrow">Which of the 4 hero archetypes are you?</span>
+      <div class="hero-row" id="introHeroes"></div>
+    </div>
+    <button class="btn" id="startBtn">Begin the Day →</button>
+  </section>
+
+  <!-- SCENE -->
+  <section class="screen" id="screen-scene">
+    <div class="scene-visual" id="sceneVisual"></div>
+    <div class="scene-head">
+      <div class="scene-tag">
+        <span class="chip time" id="sceneTime"></span>
+        <span class="chip" id="sceneNum"></span>
+      </div>
+      <h2 id="sceneTitle"></h2>
+    </div>
+    <p class="scenario" id="sceneText"></p>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback">
+      <span class="dot"></span>
+      <div style="flex:1"><p id="feedbackText"></p><div class="timer"><span></span></div></div>
+    </div>
+  </section>
+
+  <!-- GATEWAY -->
+  <section class="screen" id="screen-gate">
+    <div class="lock-hero">
+      <svg viewBox="0 0 120 110" fill="none" aria-hidden="true">
+        <circle cx="60" cy="55" r="48" stroke="#cbd5e1" stroke-dasharray="3 5" class="a-spin" style="transform-origin:60px 55px"/>
+        <rect x="36" y="46" width="48" height="38" rx="8" fill="#ffffff" stroke="#0ea5e9" stroke-width="1.6"/>
+        <path d="M46 46 V36 a14 14 0 0 1 28 0 V40" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="60" cy="63" r="4" fill="#059669" class="a-pulse"/>
+        <path d="M60 67 V74" stroke="#059669" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="scene-head" style="text-align:center;align-items:center">
+      <span class="eyebrow">Simulation Complete</span>
+      <h2>Unlock Your Cognitive Blueprint</h2>
+      <p style="max-width:480px">Your day has been mapped across four hidden pillars. Tell us where to send your blueprint and we'll generate your archetype, blind spot, and a custom 7-day operating rule.</p>
+    </div>
+    <form class="card form" id="leadForm" novalidate>
+      <div class="field">
+        <label for="fName">First Name <i>*</i></label>
+        <input id="fName" name="name" type="text" autocomplete="given-name" placeholder="e.g. Alex" maxlength="60" required>
+        <span class="err" id="errName"></span>
+      </div>
+      <div class="field">
+        <label for="fContact">Email Address or WhatsApp Number <i>*</i></label>
+        <input id="fContact" name="email" type="text" autocomplete="email" placeholder="you@example.com or +91 98765 43210" maxlength="120" required>
+        <span class="err" id="errContact"></span>
+      </div>
+      <div class="field">
+        <label for="fRole">Current Focus / Role</label>
+        <select id="fRole" name="role">
+          <option>Mid-Career Professional</option>
+          <option>Founder / Solo Builder</option>
+          <option>Manager / Team Lead</option>
+          <option>Student / Explorer</option>
+        </select>
+      </div>
+      <div class="note">
+        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#0ea5e9"/><path d="M8 7v4M8 4.6v.1" stroke="#0ea5e9" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Your responses are recorded for behavioral research and to generate your custom 7-day operating rule.</span>
+      </div>
+      <button class="btn" type="submit" id="submitBtn">Reveal My Blueprint →</button>
+      <button class="linkbtn" type="button" id="skipBtn">Skip &amp; View Results</button>
+    </form>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="screen-results">
+    <div class="scene-head">
+      <span class="eyebrow">Diagnostic Report</span>
+      <h1 id="resHeader">Your Cognitive Baseline</h1>
+    </div>
+
+    <div class="archetype">
+      <div class="arch-top">
+        <div class="emblem badge-pop" id="resEmblem"></div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span class="lvl" id="resLevel">Level 3</span>
+          <span class="name" id="resName">The Strategic Observer</span>
+          <span class="alias" id="resAlias"></span>
+        </div>
+      </div>
+      <div class="score-line"><b id="resScore">0</b><span>/ 24 total points</span></div>
+      <div class="scale" id="resScale"><div></div><div></div><div></div><div></div></div>
+      <div class="scale-labels"><span>8–12</span><span>13–17</span><span>18–21</span><span>22–24</span></div>
+    </div>
+
+    <div class="card altitude" id="altCard">
+      <span class="eyebrow">Thinking Altitude</span>
+      <div class="alt-head">
+        <h2 id="altVerdict">High-Level Thinker</h2>
+        <span class="alt-pill" id="altPill">HIGH</span>
+      </div>
+      <div class="gauge">
+        <div class="gauge-track"><div class="gauge-mid"></div></div>
+        <div class="gauge-marker" id="altMarker"><span id="altMarkerLbl">16</span></div>
+      </div>
+      <div class="gauge-labels"><span>◀ Low-Level · Reactive</span><span>High-Level · Systems ▶</span></div>
+      <p id="altText" style="margin-top:12px"></p>
+    </div>
+
+    <div class="card levels">
+      <span class="eyebrow">Seven Levels of Consciousness · Where You Are</span>
+      <h2 id="lvlTitle" style="margin:8px 0 4px"></h2>
+      <div class="lv-sub" id="lvlTheme"></div>
+      <p id="lvlHere" style="margin:10px 0 16px"></p>
+      <div class="lv-ladder" id="lvlLadder"></div>
+      <div class="lv-edge" id="lvlEdge"></div>
+      <div class="lv-credit">Levels framework: Richard Barrett's Seven Levels of Consciousness model (Barrett Values Centre).</div>
+    </div>
+
+    <div class="card lead" id="ldCard">
+      <span class="eyebrow">Leadership Value Level · Barrett Leadership Model</span>
+      <h2 id="ldTitle" style="margin:8px 0 4px"></h2>
+      <div class="lv-sub" id="ldValue" style="margin-bottom:10px"></div>
+      <span class="ld-badge" id="ldBadge"></span>
+      <p id="ldReady" style="margin:12px 0 14px"></p>
+      <div class="lv-ladder" id="ldSteps"></div>
+      <div class="ld-grid">
+        <div class="ld-box good"><b>Leadership strength</b><span id="ldStrength"></span></div>
+        <div class="ld-box warn"><b>Watch out for</b><span id="ldWatch"></span></div>
+      </div>
+      <div class="lv-credit">Leadership levels: Richard Barrett's Seven Levels of Leadership Consciousness (Barrett Values Centre). An indicator based on 8 everyday choices — useful for reflection and coaching, not a hiring or promotion decision on its own.</div>
+    </div>
+
+    <div class="hero-row" id="resHeroes"></div>
+
+    <div class="card grid2">
+      <div class="radar-wrap" id="radar"></div>
+      <div class="pillars" id="pillarBars"></div>
+    </div>
+
+    <div class="card blind">
+      <span class="eyebrow">Primary Behavioral Blind Spot</span>
+      <h2 id="blindTitle" style="margin:8px 0 10px"></h2>
+      <p id="blindText"></p>
+    </div>
+
+    <div class="card rule">
+      <span class="eyebrow">Your 7-Day IF–THEN Operating Rule</span>
+      <p style="margin:8px 0 14px">Practice this one rule daily for the next 7 days. Don't add anything else.</p>
+      <div class="rule-box" id="ruleBox"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="copyBtn">Copy My Archetype Card</button>
+      <button class="btn ghost" id="restartBtn">Run Simulation Again</button>
+    </div>
+  </section>
+
+  <footer>The Obix Mirror · A reflection tool, not a clinical assessment.</footer>
+</div>
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+/* =====================================================================
+ *  WEBHOOK CONFIGURATION
+ *  Paste your deployed Google Apps Script Web App URL below.
+ *  Payload (JSON string, sent as text/plain for no-cors compatibility):
+ *  { name, email, role, archetype, heroAlias, thinkerLevel, consciousnessLevel,
+ *    leadershipLevel, leadershipReadiness, totalScore,
+ *    noiseScore, patternScore, judgmentScore, metaScore, choicesLog }
+ *  A full receiver script is in Code.gs (delivered alongside this file).
+ *
+ * ===================================================================== */
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzq4w8MHLEhnXlMQnaLDnYebUq6RZCU6DWKewey6eQvN7hTQxcrXCja_zjZPm5qBayHmA/exec";
+
+/* ---------- Pillars ---------- */
+const PILLARS = {
+  noise:    { label: "Noise Filtering",       sub: "Critical Thinking",              color: "#0ea5e9" },
+  pattern:  { label: "Pattern Identification", sub: "Systems Thinking",               color: "#059669" },
+  judgment: { label: "Second-Order Judgment", sub: "Long-Term Leverage",             color: "#db2777" },
+  meta:     { label: "Meta-Cognition",        sub: "Self-Observation & Emotional Control", color: "#7c3aed" }
+};
+const PILLAR_ORDER = ["noise", "pattern", "judgment", "meta"];
+
+/* ---------- Scene SVGs ---------- */
+const C = "#0ea5e9", E = "#059669", A = "#d97706", B = "#cbd5e1", K = "#ffffff";
+const SVG = {
+  phone: `<svg viewBox="0 0 320 200" fill="none">
+    <g class="a-spin" style="transform-origin:160px 100px">
+      <path d="M160 20 a80 80 0 0 1 80 80" stroke="${C}" stroke-opacity=".5" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M160 180 a80 80 0 0 1 -80 -80" stroke="${C}" stroke-opacity=".5" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="240" cy="100" r="3" fill="${A}"/><circle cx="80" cy="100" r="3" fill="${A}"/>
+    </g>
+    <g class="a-spin-r" style="transform-origin:160px 100px">
+      <path d="M160 0 a100 100 0 0 1 100 100" stroke="${B}" stroke-width="1.2" stroke-dasharray="3 6"/>
+      <path d="M160 200 a100 100 0 0 1 -100 -100" stroke="${B}" stroke-width="1.2" stroke-dasharray="3 6"/>
+      <path d="M60 100 a100 100 0 0 1 30 -70" stroke="${C}" stroke-opacity=".25" stroke-width="1.2"/>
+    </g>
+    <path d="M30 150 q20 -14 40 0 t40 0" stroke="${C}" stroke-opacity=".3" class="a-dash"/>
+    <path d="M210 50 q20 -14 40 0 t40 0" stroke="${C}" stroke-opacity=".3" class="a-dash"/>
+    <g class="a-float">
+      <rect x="132" y="48" width="56" height="104" rx="11" fill="${K}" stroke="${C}" stroke-width="1.6"/>
+      <rect x="139" y="60" width="42" height="80" rx="4" fill="${C}" fill-opacity=".1" class="a-glow"/>
+      <rect x="145" y="70" width="30" height="5" rx="2" fill="${C}"/>
+      <rect x="145" y="81" width="22" height="3" rx="1.5" fill="${C}" fill-opacity=".5"/>
+      <rect x="145" y="89" width="26" height="3" rx="1.5" fill="${C}" fill-opacity=".5"/>
+      <path d="M150 108 l10 -10 l10 10" stroke="${A}" stroke-width="2" stroke-linecap="round" class="a-flicker"/>
+      <path d="M160 98 v26" stroke="${A}" stroke-width="2" stroke-linecap="round" class="a-flicker"/>
+      <rect x="152" y="53" width="16" height="2.5" rx="1.25" fill="${B}"/>
+    </g>
+  </svg>`,
+  maze: `<svg viewBox="0 0 320 200" fill="none">
+    <circle cx="160" cy="100" r="80" stroke="${B}" stroke-width="2"/>
+    <circle cx="160" cy="100" r="58" stroke="${B}" stroke-width="2" stroke-dasharray="300 64"/>
+    <circle cx="160" cy="100" r="36" stroke="${B}" stroke-width="2" stroke-dasharray="180 46"/>
+    <path d="M160 100 m0 -58 v22" stroke="${A}" stroke-width="3" stroke-linecap="round"/>
+    <rect x="152" y="38" width="16" height="6" rx="1" fill="${A}" fill-opacity=".9"/>
+    <circle cx="160" cy="100" r="47" stroke="${C}" stroke-opacity=".25" stroke-width="1" class="a-dash"/>
+    ${[0,1,2,3,4,5,6,7].map(i=>{const a=(-60+i*36)*Math.PI/180,x=160+47*Math.cos(a),y=100+47*Math.sin(a);
+      return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="3.2" ry="2" fill="${C}" class="a-step" style="animation-delay:${(i*0.4).toFixed(1)}s" transform="rotate(${(-60+i*36+90)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`}).join("")}
+    <circle cx="160" cy="100" r="5" fill="${E}" class="a-pulse"/>
+    <path d="M160 100 v-8" stroke="${E}" stroke-opacity=".4"/>
+  </svg>`,
+  blueprint: `<svg viewBox="0 0 320 200" fill="none">
+    <rect x="40" y="26" width="240" height="148" rx="6" fill="${C}" fill-opacity=".04" stroke="${B}"/>
+    ${Array.from({length:11},(_,i)=>`<path d="M${40+i*24} 26 V174" stroke="${B}" stroke-width=".7"/>`).join("")}
+    ${Array.from({length:7},(_,i)=>`<path d="M40 ${26+i*24} H280" stroke="${B}" stroke-width=".7"/>`).join("")}
+    <rect x="76" y="56" width="90" height="70" stroke="${C}" stroke-opacity=".7" stroke-width="1.4"/>
+    <rect x="166" y="56" width="70" height="44" stroke="${C}" stroke-opacity=".7" stroke-width="1.4"/>
+    <path d="M166 100 H236 V140 H120 V126" stroke="${C}" stroke-opacity=".7" stroke-width="1.4"/>
+    <path d="M190 100 l5 8 l-4 6 l6 9 l-3 7" stroke="${A}" stroke-width="1.4" stroke-linecap="round" class="a-glow"/>
+    <g class="a-scan">
+      <circle cx="130" cy="90" r="26" fill="${K}" fill-opacity=".55" stroke="${C}" stroke-width="2.2"/>
+      <circle cx="130" cy="90" r="26" stroke="${C}" stroke-opacity=".25" stroke-width="6"/>
+      <path d="M149 109 L170 130" stroke="${C}" stroke-width="5" stroke-linecap="round"/>
+      <path d="M118 80 a14 14 0 0 1 12 -6" stroke="#fff" stroke-opacity=".35" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </svg>`,
+  pool: `<svg viewBox="0 0 320 200" fill="none">
+    <ellipse cx="160" cy="150" rx="130" ry="30" fill="${C}" fill-opacity=".06" stroke="${B}"/>
+    <ellipse cx="160" cy="150" rx="40" ry="10" stroke="${C}" stroke-width="1.4" class="a-ripple"/>
+    <ellipse cx="160" cy="150" rx="40" ry="10" stroke="${C}" stroke-width="1.2" class="a-ripple d2"/>
+    <ellipse cx="160" cy="150" rx="40" ry="10" stroke="${C}" stroke-width="1" class="a-ripple d3"/>
+    <path d="M120 30 q20 -14 44 -4 q22 -10 40 6 q14 2 12 14 H112 q-6 -12 8 -16Z" fill="${K}" stroke="${B}"/>
+    <path d="M168 48 L150 92 H166 L152 140" stroke="${A}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" class="a-strike"/>
+    <path d="M168 48 L150 92 H166 L152 140" stroke="${A}" stroke-opacity=".25" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" class="a-strike"/>
+    <circle cx="152" cy="146" r="2.5" fill="${A}" class="a-strike"/>
+  </svg>`,
+  path: `<svg viewBox="0 0 320 200" fill="none">
+    <path d="M40 180 L280 40" stroke="${B}" stroke-width="1" stroke-dasharray="2 5"/>
+    ${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${52+i*28}" y="${164-i*16}" width="26" height="9" rx="3" fill="${K}" stroke="${E}" stroke-opacity="${(0.4+i*0.07).toFixed(2)}"/>`).join("")}
+    <circle cx="278" cy="40" r="6" fill="${E}" class="a-pulse"/>
+    <circle cx="278" cy="40" r="14" stroke="${E}" stroke-opacity=".3"/>
+    <path d="M150 104 C 170 110 190 140 230 150" stroke="${A}" stroke-width="1.6" stroke-dasharray="4 5" class="a-dash"/>
+    <path d="M226 150 H234 V186" stroke="${B}" stroke-width="2"/>
+    <g class="a-flicker">
+      <rect x="196" y="126" width="74" height="28" rx="6" fill="${K}" stroke="${A}" stroke-width="1.8"/>
+      <rect x="196" y="126" width="74" height="28" rx="6" stroke="${A}" stroke-opacity=".25" stroke-width="7"/>
+      <text x="233" y="145" fill="${A}" font-family="ui-monospace,Menlo,monospace" font-size="11" text-anchor="middle" font-weight="700" letter-spacing="1.5">QUICK ↗</text>
+    </g>
+  </svg>`,
+  circles: `<svg viewBox="0 0 320 200" fill="none">
+    <path d="M30 100 H120" stroke="${C}" stroke-opacity=".5" stroke-width="1.4" class="a-dash"/>
+    <path d="M200 100 H290" stroke="${E}" stroke-opacity=".5" stroke-width="1.4" class="a-dash"/>
+    <g class="a-split-l"><circle cx="146" cy="100" r="44" stroke="${C}" stroke-width="2"/><circle cx="146" cy="100" r="44" fill="${C}" fill-opacity=".06"/></g>
+    <g class="a-split-r"><circle cx="174" cy="100" r="44" stroke="${E}" stroke-width="2"/><circle cx="174" cy="100" r="44" fill="${E}" fill-opacity=".06"/></g>
+    <path d="M60 40 C 120 40 120 160 160 160 C 200 160 200 40 260 40" stroke="${B}" stroke-width="1.2"/>
+    <circle cx="160" cy="100" r="3.5" fill="${A}" class="a-glow"/>
+  </svg>`,
+  hourglass: `<svg viewBox="0 0 320 200" fill="none">
+    <circle cx="130" cy="100" r="70" fill="${C}" fill-opacity=".05" class="a-glow"/>
+    <g>
+      <path d="M100 32 H160 M100 168 H160" stroke="${C}" stroke-width="3" stroke-linecap="round"/>
+      <path d="M106 34 C106 70 128 86 128 100 C128 114 106 130 106 166 H154 C154 130 132 114 132 100 C132 86 154 70 154 34Z" fill="${K}" stroke="${C}" stroke-width="1.6"/>
+      <path d="M114 50 H146 C142 70 132 84 130 92 C128 84 118 70 114 50Z" fill="${A}" fill-opacity=".85"/>
+      <path d="M112 162 C116 146 124 140 130 138 C136 140 144 146 148 162Z" fill="${A}" fill-opacity=".85"/>
+      <circle cx="130" cy="110" r="1.6" fill="${A}" class="a-sand"/>
+      <circle cx="130" cy="110" r="1.6" fill="${A}" class="a-sand" style="animation-delay:1s"/>
+      <circle cx="130" cy="110" r="1.6" fill="${A}" class="a-sand" style="animation-delay:2s"/>
+    </g>
+    <g transform="translate(186 110) rotate(-6)">
+      <path d="M0 0 L46 -6 L46 54 L0 60Z" fill="${K}" stroke="${B}" stroke-width="1.4"/>
+      <path d="M46 -6 L92 0 L92 60 L46 54Z" fill="${K}" stroke="${B}" stroke-width="1.4"/>
+      <path d="M8 12 L38 8 M8 22 L38 18 M8 32 L30 29" stroke="${E}" stroke-opacity=".7" stroke-linecap="round"/>
+      <path d="M54 8 L84 12 M54 18 L80 21" stroke="${C}" stroke-opacity=".5" stroke-linecap="round"/>
+    </g>
+  </svg>`,
+  mirror: `<svg viewBox="0 0 320 200" fill="none">
+    <rect x="178" y="22" width="110" height="156" rx="55" fill="${K}" stroke="${C}" stroke-width="1.8"/>
+    <clipPath id="mclip"><rect x="184" y="28" width="98" height="144" rx="49"/></clipPath>
+    <g clip-path="url(#mclip)" class="a-glow">
+      ${Array.from({length:7},(_,i)=>`<path d="M${184+i*16} 28 V172" stroke="${C}" stroke-opacity=".5" stroke-width=".9"/>`).join("")}
+      ${Array.from({length:10},(_,i)=>`<path d="M184 ${28+i*16} H282" stroke="${C}" stroke-opacity=".5" stroke-width=".9"/>`).join("")}
+      <rect x="216" y="76" width="32" height="32" stroke="${E}" stroke-width="1.6"/>
+    </g>
+    <path d="M118 100 L178 100" stroke="${C}" stroke-opacity=".35" class="a-dash"/>
+    <g class="a-blink">
+      <path d="M40 100 C 62 70 108 70 130 100 C 108 130 62 130 40 100Z" fill="${K}" stroke="${C}" stroke-width="1.8"/>
+      <circle cx="85" cy="100" r="17" stroke="${C}" stroke-width="1.6"/>
+      <circle cx="85" cy="100" r="7" fill="${C}"/>
+      <circle cx="89" cy="96" r="2.2" fill="#fff" fill-opacity=".8"/>
+    </g>
+  </svg>`
+};
+
+/* ---------- Scenes ----------
+ * intentionalFirst: varies button order so the intentional option is not always in the same slot. */
+const SCENES = [
+  { time:"8:15 AM", clock:"08:15 AM", title:"The Scary Forward", pillar:"noise", level:1, svg:SVG.phone, intentionalFirst:true,
+    text:"You're having your morning tea. A WhatsApp forward says AI will take away jobs like yours within a year. Your friends are sharing it, and you start worrying about your salary and EMIs. What do you do?",
+    reactive:"Panic a little, then watch videos about it for 30 minutes and feel worse — without actually doing anything.",
+    intentional:"Take a breath, check if the news comes from a real source, write down one skill you can start learning this month, and get on with your day.",
+    fbR:"Fear makes every forward feel urgent — worrying feels like action, but it changes nothing.",
+    fbI:"Checking the facts first and then taking one small step turns fear into a plan." },
+  { time:"10:30 AM", clock:"10:30 AM", title:"The Same Mistake Again", pillar:"pattern", level:3, svg:SVG.maze, intentionalFirst:false,
+    text:"At work, the monthly report your team sends is late again — the third time this quarter. Each time, someone misses a step at the last minute, and your manager is not happy. What do you do?",
+    reactive:"Stay late, fix it yourself, and tell the team to be more careful next time.",
+    intentional:"Sit with the team for 20 minutes, find the exact step where it keeps breaking, and make a simple checklist so it doesn't happen again.",
+    fbR:"Fixing it yourself saves today, but the same problem will come back next month.",
+    fbI:"When a problem keeps repeating, the process is broken — not the people — and fixing the process is real excellence." },
+  { time:"1:00 PM", clock:"01:00 PM", title:"The Honest Feedback", pillar:"noise", level:4, svg:SVG.blueprint, intentionalFirst:false,
+    text:"In a meeting, you share an idea you're really proud of. A colleague says in front of everyone, \"This won't work — and here's why.\" Part of you feels hurt. What happens next?",
+    reactive:"Defend your idea and quietly decide they just don't understand it.",
+    intentional:"Ask them to explain more, check whether they're right — and change your plan if they are.",
+    fbR:"When we love an idea, we stop hearing its problems, and that's how avoidable mistakes happen.",
+    fbI:"Being open to being wrong is how people grow the fastest." },
+  { time:"3:15 PM", clock:"03:15 PM", title:"The Rude Message", pillar:"meta", level:2, svg:SVG.pool, intentionalFirst:true,
+    text:"In the office WhatsApp group, a colleague replies to your message rudely — in front of everyone. You feel the anger rising. You'll still sit next to this person tomorrow. What do you do?",
+    reactive:"Reply immediately with an equally sharp message so nobody thinks you're weak.",
+    intentional:"Put the phone down for 15 minutes, reply calmly, and later talk to them one-on-one to sort it out.",
+    fbR:"Messages sent in anger usually hurt the relationship more than the original comment did.",
+    fbI:"Pausing before you reply protects both your image and the relationship." },
+  { time:"5:00 PM", clock:"05:00 PM", title:"The Easy Praise", pillar:"judgment", level:5, svg:SVG.path, intentionalFirst:false,
+    text:"Your boss asks you to organise the office celebration. Everyone will notice and praise you. But it will take up the evenings you had set aside for a course or project that really matters to you. What do you choose?",
+    reactive:"Say yes right away — it feels good to be noticed and appreciated.",
+    intentional:"Thank your boss, explain what you're working on, and offer smaller help instead — so you protect time for what truly matters to you.",
+    fbR:"Praise feels great for a day, but time taken away from what matters to you is hard to get back.",
+    fbI:"Choosing what matters to you over quick praise is what living by your own values looks like." },
+  { time:"7:30 PM", clock:"07:30 PM", title:"The Same Old Fight", pillar:"pattern", level:6, svg:SVG.circles, intentionalFirst:true,
+    text:"At home, the family argues again about the same thing — who does which chores, or how money is being spent. It's the same fight you had last month, and everyone is upset. How do you handle it?",
+    reactive:"Try to win the argument and prove that you are right this time.",
+    intentional:"Stop arguing about who's right, ask everyone to sit down, and agree on one simple rule that works for all.",
+    fbR:"Winning the argument doesn't end it — the same fight usually comes back.",
+    fbI:"Turning a fight into a shared agreement is how strong families and teams are built." },
+  { time:"9:00 PM", clock:"09:00 PM", title:"The Free Hour", pillar:"judgment", level:7, svg:SVG.hourglass, intentionalFirst:true,
+    text:"Your evening plan gets cancelled. Suddenly you have one free hour before bed. What actually happens?",
+    reactive:"Scroll Instagram or YouTube until you feel sleepy.",
+    intentional:"Spend 40 minutes on something bigger than you — teaching someone, helping a cause, or working on your long-term goal — then sleep on time.",
+    fbR:"Free time goes to the phone by default, and those hours quietly add up to weeks every year.",
+    fbI:"One hour given to something bigger than yourself is how a sense of purpose is built." },
+  { time:"10:30 PM", clock:"10:30 PM", title:"Looking Back at the Day", pillar:"meta", level:4, svg:SVG.mirror, intentionalFirst:false,
+    text:"Before you sleep, imagine someone watched a video of your whole day — with no sound, only your actions. What would they say was running your day?",
+    reactive:"My phone, deadlines, and what other people wanted from me.",
+    intentional:"My own priorities — I paused before reacting and chose what to do.",
+    fbR:"Being honest about this is the first step to changing it.",
+    fbI:"When your actions match your own priorities, you are the one running your day." }
+];
+
+/* ---------- Results content ---------- */
+const ARCHETYPES = [
+  { min:8,  max:12, level:"Level 1", name:"The Reactive Responder", hero:"The Spark",    emblem:"spark",
+    alias:"Hero alias: The Spark — lightning-fast, fiery, always first to react." },
+  { min:13, max:17, level:"Level 2", name:"The Tactical Grinder",   hero:"The Anvil",    emblem:"anvil",
+    alias:"Hero alias: The Anvil — unbreakable, reliable, absorbs every hit." },
+  { min:18, max:21, level:"Level 3", name:"The Strategic Observer", hero:"The Sentinel", emblem:"sentinel",
+    alias:"Hero alias: The Sentinel — sees the whole field before making a move." },
+  { min:22, max:24, level:"Level 4", name:"The Systems Architect",  hero:"The Keystone", emblem:"keystone",
+    alias:"Hero alias: The Keystone — designs the structure everything else rests on." }
+];
+
+/* ---------- Hero emblems (original designs) ---------- */
+const EMBLEMS = {
+  spark:    { c1:"#fb923c", c2:"#ea580c",
+    icon:`<path d="M35 13 L21 35 H31 L28 51 L43 27 H33 Z" fill="#fff"/>` },
+  anvil:    { c1:"#64748b", c2:"#1e293b",
+    icon:`<path d="M15 22 H47 V25 C42 25 38 28 37 32 V37 H41 V43 H23 V37 H27 V32 C26 28 21 26 15 26 Z" fill="#fff"/><path d="M41 18 l4 -4 M45 20 l5 -2 M38 16 l1 -5" stroke="#fde68a" stroke-width="2" stroke-linecap="round"/>` },
+  sentinel: { c1:"#34d399", c2:"#047857",
+    icon:`<path d="M13 32 C20 21 44 21 51 32 C44 43 20 43 13 32Z" fill="none" stroke="#fff" stroke-width="3.2" stroke-linejoin="round"/><circle cx="32" cy="32" r="6.5" fill="#fff"/><circle cx="32" cy="32" r="2.6" fill="#047857"/>` },
+  keystone: { c1:"#38bdf8", c2:"#4f46e5",
+    icon:`<path d="M19 47 V33 A13 13 0 0 1 45 33 V47" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/><path d="M27.5 15 H36.5 L34.5 25 H29.5 Z" fill="#fde68a"/><path d="M15 48 H49" stroke="#fff" stroke-width="3" stroke-linecap="round"/>` }
+};
+let emblemSeq = 0;
+function emblemSVG(key){
+  const e = EMBLEMS[key], id = `eg${++emblemSeq}`;
+  return `<svg viewBox="0 0 64 64" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${e.c1}"/><stop offset="1" stop-color="${e.c2}"/></linearGradient></defs>
+    <path d="M32 3 L57 12 V30 C57 47 46 57 32 61 C18 57 7 47 7 30 V12 Z" fill="url(#${id})"/>
+    <path d="M32 7 L53 14.5 V30 C53 44.5 44 53 32 57" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.5"/>
+    ${e.icon}</svg>`;
+}
+function heroRow(activeIdx){
+  return ARCHETYPES.map((a,i)=>`<div class="hero-mini ${activeIdx==null?'':(i===activeIdx?'me':'dim')}">
+    ${emblemSVG(a.emblem)}<b>${a.hero}</b><span>${a.level}</span></div>`).join("");
+}
+
+/* ---------- Pillar "superpower" icons ---------- */
+const PILLAR_ICON = {
+  noise:    `<path d="M4 5h16l-6 7.5V18l-4 2v-7.5z"/>`,
+  pattern:  `<path d="M18 8a7 7 0 1 0 1.6 5.5"/><path d="M18.5 3.5V8H14"/>`,
+  judgment: `<path d="M3 17l6-6 4 4 7-8"/><path d="M14 7h6v6"/>`,
+  meta:     `<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>`
+};
+const POWERS = { noise:"Signal Sight", pattern:"Loop Vision", judgment:"Future Sight", meta:"Inner Mirror" };
+function pillarIcon(k, col){
+  return `<span class="pi" style="background:${col}1a;color:${col}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${PILLAR_ICON[k]}</svg></span>`;
+}
+document.getElementById("introHeroes").innerHTML = heroRow(null);
+const BLIND = {
+  noise: {
+    text:"You get pulled in by urgent news, hype and strong emotions — even when someone criticises your ideas. When everything feels loud, you tend to react to what's loudest instead of what's true.",
+    rule:"<b>IF</b> I feel a sudden urge to act on something I just read or heard,<br><b>THEN</b> I write down the main claim in one line, check one reliable source, and wait 10 minutes before doing anything."
+  },
+  pattern: {
+    text:"You tend to fix each problem as if it's new, instead of noticing it's the same problem coming back. You stay busy, but the same delays and arguments keep returning.",
+    rule:"<b>IF</b> the same problem, delay or argument happens a second time,<br><b>THEN</b> I stop and spend 10 minutes writing down what happened step by step — and pick one rule that would stop it next time."
+  },
+  judgment: {
+    text:"You often pick what feels good this week over what helps you in the long run. Quick praise and easy comfort slowly push out the work that really builds your future.",
+    rule:"<b>IF</b> I'm offered a new task or suddenly get free time,<br><b>THEN</b> I ask, \"Will this matter in 3 years?\" — and if not, I say no or give at least 30 minutes to my long-term goal."
+  },
+  meta: {
+    text:"In the moment, you don't always notice what's driving you — especially when you're upset or rushed. Without that pause, strong feelings and other people's demands end up making your choices.",
+    rule:"<b>IF</b> I feel angry, tense or in a rush to reply,<br><b>THEN</b> I name the feeling to myself (\"this is anger\"), take three slow breaths, and wait 15 minutes before replying or deciding."
+  }
+};
+
+/* ---------- State ---------- */
+let state;
+function resetState(){
+  state = { idx:0, scores:{noise:0,pattern:0,judgment:0,meta:0}, choicesLog:[], locked:false, name:"" };
+}
+resetState();
+
+/* ---------- Helpers ---------- */
+const $ = id => document.getElementById(id);
+function showScreen(id){
+  const current = document.querySelector(".screen.active");
+  const next = $(id);
+  if(current === next){ next.classList.remove("active"); void next.offsetWidth; next.classList.add("active"); return; }
+  if(current){
+    current.classList.add("leaving");
+    setTimeout(()=>{ current.classList.remove("active","leaving"); next.classList.add("active"); window.scrollTo({top:0,behavior:"smooth"}); },280);
+  } else next.classList.add("active");
+}
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function totalScore(){ return PILLAR_ORDER.reduce((a,k)=>a+state.scores[k],0); }
+function getArchetype(t){ return ARCHETYPES.find(a=>t>=a.min && t<=a.max) || ARCHETYPES[0]; }
+/* Thinking altitude: Levels 1–2 (8–17 pts) = Low-Level, Levels 3–4 (18–24 pts) = High-Level */
+function thinkerLevel(t){ return t >= 18 ? "High-Level Thinker" : "Low-Level Thinker"; }
+
+/* ---------- Seven Levels of Consciousness (after Richard Barrett / Barrett Values Centre) ----------
+ * Each scene is tagged with one level. Overall level comes from the number of intentional choices:
+ * Levels 1–3 = self-interest (Low-Level Thinker), Level 4 = transformation, Levels 5–7 = common good. */
+const LEVELS = {
+  1:{ name:"Viability",     theme:"Ensuring Stability",      color:"#c1272d", traits:"Financial stability, safety, health",
+      here:"Right now, most of your energy goes into feeling safe — money, job security and keeping up. That's natural, but when fear makes the decisions, it's hard to think clearly or grow." },
+  2:{ name:"Relationships", theme:"Building Relationships",  color:"#f26b21", traits:"Connection, respect, listening, open communication",
+      here:"You care a lot about getting along and being accepted by people around you. The next step is keeping good relationships without letting anger or approval decide what you do." },
+  3:{ name:"Performance",   theme:"Achieving Excellence",    color:"#e8a10c", traits:"Quality, results, competence, efficiency",
+      here:"You're driven by doing good work and being recognised for it. The next step is fixing the systems behind the work, not just working harder." },
+  4:{ name:"Evolution",     theme:"Courageously Evolving",   color:"#6aa82a", traits:"Accountability, learning, innovation, autonomy",
+      here:"You're at the turning point — open to feedback, owning your choices and willing to change. This is where people move from \"what's in it for me\" to \"what's best for everyone\"." },
+  5:{ name:"Alignment",     theme:"Authentic Expression",    color:"#0f9f97", traits:"Integrity, honesty, trust, passion, meaning",
+      here:"Your choices are guided more by your own values than by praise or pressure. The next step is using that clarity to make a difference together with other people." },
+  6:{ name:"Collaboration", theme:"Cultivating Communities", color:"#2f6db5", traits:"Partnership, mentoring, community involvement",
+      here:"You think beyond yourself — you bring people to agreement and help others grow. The next step is linking this to a long-term purpose bigger than any one job." },
+  7:{ name:"Contribution",  theme:"Living Purpose",          color:"#6b3fa0", traits:"Service, vision, future generations, long-term perspective",
+      here:"Your day shows a life led by purpose — calm, values-driven and focused on giving back. Your work now is staying consistent, especially under pressure." }
+};
+const LEVEL_BY_COUNT = [1,1,2,3,3,4,5,6,7]; // index = number of intentional choices (0–8)
+function consciousnessLevel(){ return LEVEL_BY_COUNT[intentionalCount()]; }
+function levelLabel(l){ return `Level ${l}: ${LEVELS[l].name}`; }
+function levelStatus(l){
+  const picks = SCENES.map((s,i)=>s.level===l ? state.choicesLog[i] : null).filter(Boolean);
+  const good = picks.filter(c=>c.endsWith("Intentional")).length;
+  return good===picks.length ? "active" : good===0 ? "developing" : "partial";
+}
+function growthEdge(){
+  for(let l=1;l<=7;l++) if(levelStatus(l)!=="active") return l;
+  return null;
+}
+/* ---------- Barrett Seven Levels of Leadership Consciousness ---------- */
+const LEAD = {
+  1:{ name:"Crisis Manager",          theme:"Financial Stability",  values:"Able to manage adversity",
+      strengths:"Stays calm and practical when things go wrong. Keeps money, safety and the basics under control.",
+      watch:"May try to control everything, find it hard to delegate, and be slow to build trust." },
+  2:{ name:"Relationship Manager",    theme:"Supporting Relationships", values:"Communication, respect, accessibility, approachability",
+      strengths:"Easy to approach — communicates well with employees and customers and treats people with respect.",
+      watch:"May avoid difficult conversations, play favourites, or resist new people and new ideas." },
+  3:{ name:"Performance Manager",     theme:"Best Practice",        values:"Productivity, efficiency, quality, competence, results",
+      strengths:"Organised and results-focused — builds good systems, plans well and cares about quality.",
+      watch:"May chase status or power, add red tape, get pulled into office politics, or overwork." },
+  4:{ name:"Facilitator / Innovator", theme:"Continuous Renewal",   values:"Accountability, team building, resilience, innovation, empowerment",
+      strengths:"Builds the team, takes ownership, bounces back from setbacks and gives people room to try new ideas.",
+      watch:"Still working through old fears — of failing, or of not being recognised enough." },
+  5:{ name:"Authentic Leader",        theme:"Self-Expression",      values:"Authenticity, integrity, purpose, clarity, transparency",
+      strengths:"Leads from clear values and purpose — honest, transparent and trusted by the team.",
+      watch:"Values need strong basics underneath — without follow-through, people lose trust." },
+  6:{ name:"Mentor / Partner Leader", theme:"Collaboration",        values:"Partnerships, coaching, leadership development, empathy",
+      strengths:"Coaches and develops people, builds partnerships, and grows the next generation of leaders.",
+      watch:"Must keep holding people accountable while being supportive." },
+  7:{ name:"Visionary Leader",        theme:"Service",              values:"Vision, long-term perspective, ethics, compassion",
+      strengths:"Sees the long-term picture, creates a new future, and leads with ethics and compassion.",
+      watch:"Must stay connected to day-to-day realities and the people doing the work." }
+};
+function leadershipReadiness(){
+  const l = consciousnessLevel();
+  const weakBase = [1,2,3].find(x=>levelStatus(x)!=="active");
+  if(l <= 3) return { key:"emerging", label:"Emerging Leader",
+    text:"Right now, the focus is on leading yourself — handling pressure, people and results consistently. Leading others will come more naturally once these basics are strong." };
+  if(l === 4) return { key:"developing", label:"Developing Leader",
+    text:"Ready to lead small teams or projects, especially with a mentor's support. The shift from \"me\" to \"we\" has clearly started." };
+  if(weakBase) return { key:"capable", label:"Capable Leader — strengthen the basics",
+    text:`Has the values and vision to lead others well. Strengthen Level ${weakBase} (${LEVELS[weakBase].name}) so your team can rely on you under pressure too.` };
+  return { key:"strong", label:"Strong Leadership Potential",
+    text:"Shows the self-control, values and long-term thinking that people trust and follow. Ready to lead teams and to grow other leaders." };
+}
+function leadershipLabel(){ const l = consciousnessLevel(); return `Level ${l}: ${LEAD[l].name}`; }
+function renderLeadership(){
+  const l = consciousnessLevel(), r = leadershipReadiness();
+  const weak = [1,2,3].find(x=>levelStatus(x)!=="active");
+  $("ldCard").className = `card lead ${r.key}`;
+  $("ldTitle").innerHTML = `Level ${l}: <span style="color:${LEVELS[l].color}">${LEAD[l].name}</span>`;
+  $("ldValue").textContent = `Leadership value: ${LEAD[l].theme} — ${LEAD[l].values}`;
+  $("ldBadge").textContent = r.label;
+  $("ldReady").textContent = r.text;
+  $("ldStrength").textContent = LEAD[l].strengths;
+  $("ldWatch").textContent = weak && weak < l ? `From Level ${weak} (${LEAD[weak].name}): ${LEAD[weak].watch}` : LEAD[l].watch;
+  const widths = {7:100,6:78,5:56,4:0,3:56,2:78,1:100};
+  let html = "";
+  for(let x=7;x>=1;x--){
+    const L = LEAD[x], c = LEVELS[x].color, cur = x===l;
+    const shape = x===4 ? `<div class="lv-circle" style="${cur?`background:${c}22;border-color:${c}`:''}"></div>`
+      : `<div class="lv-shape ${x>4?'top':'bot'}" style="width:${widths[x]}%;${cur?`background:${c}2e`:''}"></div>`;
+    html += `<div class="lv-row ${cur?'cur':''} ${x>l?'above':''}">
+      <div class="lv-vis">${shape}<span class="lv-num" style="background:${c}">${x}</span></div>
+      <div class="lv-txt">
+        <div class="lv-name"><b style="color:${c};text-transform:uppercase;font-size:12.5px;letter-spacing:.03em">${L.name}</b>${cur?'<span class="you">YOU ARE HERE</span>':''}</div>
+        <div class="ld-theme" style="color:${c}">${L.theme}</div>
+        <div class="lv-theme">${L.values}</div>
+      </div></div>`;
+  }
+  $("ldSteps").innerHTML = html;
+}
+
+function renderLevels(){
+  const cur = consciousnessLevel(), edge = growthEdge();
+  const lv = LEVELS[cur];
+  $("lvlTitle").innerHTML = `Level ${cur}: <span style="color:${lv.color}">${lv.name}</span>`;
+  $("lvlTheme").textContent = `${lv.theme} — ${lv.traits}`;
+  $("lvlHere").textContent = lv.here;
+  const widths = {7:100,6:78,5:56,4:0,3:56,2:78,1:100};
+  let html = "";
+  for(let l=7;l>=1;l--){
+    const L = LEVELS[l], st = levelStatus(l), isCur = l===cur;
+    const shape = l===4 ? `<div class="lv-circle" style="${isCur?`background:${L.color}22;border-color:${L.color}`:''}"></div>`
+      : `<div class="lv-shape ${l>4?'top':'bot'}" style="width:${widths[l]}%;${isCur?`background:${L.color}2e`:''}"></div>`;
+    const stTxt = st==="active" ? "✓ Active" : st==="partial" ? "◐ Partly active" : "○ Developing";
+    html += `<div class="lv-row ${isCur?'cur':''} ${l>cur?'above':''}">
+      <div class="lv-vis">${shape}<span class="lv-num" style="background:${L.color}">${l}</span></div>
+      <div class="lv-txt">
+        <div class="lv-name"><b style="color:${L.color}">${L.name}</b><span class="lv-theme">${L.theme}</span>${isCur?'<span class="you">YOU ARE HERE</span>':''}</div>
+        <div class="lv-st ${st}">${stTxt}${l===edge?' · <b>growth edge</b>':''}</div>
+      </div></div>`;
+  }
+  $("lvlLadder").innerHTML = html;
+  $("lvlEdge").innerHTML = edge
+    ? `<b>Your growth edge: Level ${edge} — ${LEVELS[edge].name}.</b> The higher levels stay shaky until this one is strong — so start here.`
+    : `<b>All seven levels showed up in your choices today.</b> Your work now is to stay this way under pressure.`;
+}
+function intentionalCount(){ return state.choicesLog.filter(c=>c.endsWith("Intentional")).length; }
+function lowestPillar(){
+  // Ties broken by pillar order (Noise → Pattern → Judgment → Meta)
+  return PILLAR_ORDER.reduce((low,k)=> state.scores[k] < state.scores[low] ? k : low, PILLAR_ORDER[0]);
+}
+
+/* ---------- Scene rendering ---------- */
+function renderScene(){
+  const s = SCENES[state.idx];
+  state.locked = false;
+  $("clock").textContent = s.clock;
+  $("progressBar").style.width = `${(state.idx/SCENES.length)*100}%`;
+  $("sceneVisual").innerHTML = s.svg;
+  $("sceneTime").textContent = s.time;
+  $("sceneNum").textContent = `Moment ${state.idx+1} / ${SCENES.length}`;
+  $("sceneTitle").textContent = s.title;
+  $("sceneText").textContent = s.text;
+  $("feedback").classList.remove("on");
+
+  const opts = [
+    { type:"Intentional", text:s.intentional, pts:3 },
+    { type:"Reactive",    text:s.reactive,    pts:1 }
+  ];
+  if(!s.intentionalFirst) opts.reverse();
+
+  const wrap = $("choices");
+  wrap.innerHTML = "";
+  opts.forEach((o,i)=>{
+    const b = document.createElement("button");
+    b.className = "choice";
+    b.innerHTML = `<span class="key">${String.fromCharCode(65+i)}</span><span>${escapeHTML(o.text)}</span>`;
+    b.addEventListener("click",()=>choose(o,b));
+    wrap.appendChild(b);
+  });
+}
+
+function choose(opt, btn){
+  if(state.locked) return;
+  state.locked = true;
+  const s = SCENES[state.idx];
+  state.scores[s.pillar] += opt.pts;
+  state.choicesLog.push(`S${state.idx+1}:${opt.type}`);
+
+  document.querySelectorAll(".choice").forEach(b=>{
+    b.disabled = true;
+    b.classList.add(b===btn ? "picked" : "faded");
+  });
+  $("progressBar").style.width = `${((state.idx+1)/SCENES.length)*100}%`;
+  $("feedbackText").textContent = opt.type==="Intentional" ? s.fbI : s.fbR;
+  const fb = $("feedback");
+  fb.classList.remove("on"); void fb.offsetWidth; fb.classList.add("on");
+
+  setTimeout(()=>{
+    state.idx++;
+    if(state.idx < SCENES.length){
+      const sc = $("screen-scene");
+      sc.classList.add("leaving");
+      setTimeout(()=>{ sc.classList.remove("leaving"); renderScene(); showScreen("screen-scene"); window.scrollTo({top:0,behavior:"smooth"}); },280);
+    } else {
+      $("clock").textContent = "11:59 PM";
+      showScreen("screen-gate");
+    }
+  },1500);
+}
+
+/* ---------- Gateway ---------- */
+function validContact(v){
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  const digits = v.replace(/[\s\-().]/g,"");
+  const phone = /^\+?\d{8,15}$/.test(digits);
+  return email || phone;
+}
+function buildPayload(name, email, role){
+  const t = totalScore();
+  return {
+    name, email, role,
+    archetype: `${getArchetype(t).level}: ${getArchetype(t).name}`,
+    heroAlias: getArchetype(t).hero,
+    thinkerLevel: thinkerLevel(t),
+    consciousnessLevel: levelLabel(consciousnessLevel()),
+    leadershipLevel: leadershipLabel(),
+    leadershipReadiness: leadershipReadiness().label,
+    totalScore: t,
+    noiseScore: state.scores.noise,
+    patternScore: state.scores.pattern,
+    judgmentScore: state.scores.judgment,
+    metaScore: state.scores.meta,
+    choicesLog: state.choicesLog.slice()
+  };
+}
+function sendToWebhook(payload){
+  if(!WEBHOOK_URL || WEBHOOK_URL.includes("YOUR_GOOGLE_SCRIPT")){
+    console.info("[Obix Mirror] WEBHOOK_URL is still the placeholder — payload not sent:", payload);
+    return;
+  }
+  try{
+    fetch(WEBHOOK_URL,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{ "Content-Type":"text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).catch(err=>console.warn("[Obix Mirror] Webhook error:",err));
+  }catch(err){ console.warn("[Obix Mirror] Webhook error:",err); }
+}
+
+$("leadForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name = $("fName").value.trim();
+  const contact = $("fContact").value.trim();
+  const role = $("fRole").value;
+  let ok = true;
+  $("errName").textContent = ""; $("errContact").textContent = "";
+  $("fName").classList.remove("invalid"); $("fContact").classList.remove("invalid");
+  if(!name){ $("errName").textContent = "Please enter your first name."; $("fName").classList.add("invalid"); ok=false; }
+  if(!contact || !validContact(contact)){ $("errContact").textContent = "Enter a valid email or WhatsApp number (with country code)."; $("fContact").classList.add("invalid"); ok=false; }
+  if(!ok) return;
+  state.name = name;
+  sendToWebhook(buildPayload(name, contact, role));
+  renderResults();
+  showScreen("screen-results");
+});
+$("skipBtn").addEventListener("click",()=>{
+  state.name = "";
+  renderResults();
+  showScreen("screen-results");
+});
+
+/* ---------- Results ---------- */
+function renderRadar(){
+  const cx=170, cy=160, R=105, max=6;
+  // Axis angles: top, right, bottom, left
+  const angles = [-90, 0, 90, 180].map(d=>d*Math.PI/180);
+  const pt = (k,v)=>[cx+Math.cos(angles[k])*R*(v/max), cy+Math.sin(angles[k])*R*(v/max)];
+  let g = "";
+  [2,4,6].forEach(level=>{
+    const ring = angles.map((_,i)=>pt(i,level).map(n=>n.toFixed(1)).join(",")).join(" ");
+    g += `<polygon points="${ring}" fill="none" stroke="#cbd5e1" stroke-width="1" ${level<6?'stroke-dasharray="3 4"':''}/>`;
+    const off = R*(level/max)*Math.SQRT1_2/2;
+    const lx = cx+off+3, ly = cy-off-3;
+    g += `<text x="${lx}" y="${ly}" fill="#94a3b8" font-size="9" font-family="ui-monospace,Menlo,monospace">${level}</text>`;
+  });
+  angles.forEach((_,i)=>{ const [x,y]=pt(i,max); g += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#cbd5e1"/>`; });
+
+  const vals = PILLAR_ORDER.map(k=>state.scores[k]);
+  const poly = vals.map((v,i)=>pt(i,v).map(n=>n.toFixed(1)).join(",")).join(" ");
+  g += `<g class="radar-poly"><polygon points="${poly}" fill="rgba(56,189,248,.18)" stroke="#0ea5e9" stroke-width="2" stroke-linejoin="round"/>`;
+  const low = lowestPillar();
+  vals.forEach((v,i)=>{ const [x,y]=pt(i,v); const isLow = PILLAR_ORDER[i]===low;
+    g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isLow?5:4}" fill="${isLow?'#d97706':'#0ea5e9'}" stroke="#ffffff" stroke-width="2"/>`; });
+  g += `</g>`;
+
+  const labels = [
+    {x:cx, y:cy-R-40, a:"middle", t:["Noise","Filtering"]},
+    {x:cx+R+12, y:cy-4, a:"start", t:["Pattern","Identification"]},
+    {x:cx, y:cy+R+20, a:"middle", t:["Second-Order","Judgment"]},
+    {x:cx-R-12, y:cy-4, a:"end", t:["Meta-","Cognition"]}
+  ];
+  labels.forEach((l,i)=>{
+    const k = PILLAR_ORDER[i];
+    const col = k===low ? "#d97706" : "#0f172a";
+    g += `<text x="${l.x}" y="${l.y}" fill="${col}" font-size="11.5" font-weight="600" text-anchor="${l.a}" font-family="inherit">
+      <tspan x="${l.x}">${l.t[0]}</tspan><tspan x="${l.x}" dy="14">${l.t[1]}</tspan>
+      <tspan x="${l.x}" dy="14" fill="#64748b" font-weight="400" font-family="ui-monospace,Menlo,monospace" font-size="10.5">${state.scores[k]}/6</tspan></text>`;
+  });
+  $("radar").innerHTML = `<svg viewBox="-10 0 360 330" style="margin-top:6px" role="img" aria-label="Radar chart of your four pillar scores">${g}</svg>`;
+}
+
+function renderResults(){
+  const t = totalScore();
+  const arch = getArchetype(t);
+  const low = lowestPillar();
+  $("clock").textContent = "Report";
+  $("progressBar").style.width = "100%";
+  $("resHeader").textContent = state.name ? `${state.name}'s Cognitive Baseline` : "Your Cognitive Baseline";
+  $("resLevel").textContent = arch.level;
+  $("resName").textContent = arch.name;
+  $("resAlias").textContent = arch.alias;
+  const em = $("resEmblem");
+  em.innerHTML = emblemSVG(arch.emblem);
+  em.classList.remove("badge-pop"); void em.offsetWidth; em.classList.add("badge-pop");
+  $("resHeroes").innerHTML = heroRow(ARCHETYPES.indexOf(arch));
+  renderLevels();
+  renderLeadership();
+
+  const high = t >= 18, n = intentionalCount();
+  $("altCard").className = `card altitude ${high?'high':'low'}`;
+  $("altVerdict").textContent = thinkerLevel(t);
+  $("altPill").textContent = high ? "HIGH" : "LOW";
+  $("altMarkerLbl").textContent = `${t}/24`;
+  const mk = $("altMarker"); mk.style.left = "0%";
+  requestAnimationFrame(()=>setTimeout(()=>{ mk.style.left = `${((t-8)/16)*100}%`; },50));
+  $("altText").textContent = high
+    ? `${n} of your 8 moves were deliberate, systems-level choices. You tend to step back, look for root causes and long-term leverage, and manage your own reactions before acting.`
+    : `${n} of your 8 moves were deliberate, systems-level choices. Under pressure you tend to respond to what's in front of you — urgency, emotion, quick wins — rather than the structure underneath. That's a habit, not a ceiling, and it's very trainable.`;
+  $("resScore").textContent = t;
+  const lvlIdx = ARCHETYPES.indexOf(arch);
+  [...$("resScale").children].forEach((d,i)=>d.classList.toggle("on", i<=lvlIdx));
+
+  renderRadar();
+
+  $("pillarBars").innerHTML = PILLAR_ORDER.map(k=>{
+    const p = PILLARS[k], v = state.scores[k], isLow = k===low;
+    return `<div class="pillar-row">
+      <div class="top"><span class="pl">${pillarIcon(k, isLow?'#d97706':p.color)}<span><span style="color:${isLow?'#b45309':'#0f172a'};display:block">${p.label}${isLow?' · blind spot':''}</span><span class="power">Power: ${POWERS[k]}</span></span></span><span>${v}/6</span></div>
+      <div class="bar"><span data-w="${(v/6)*100}" style="background:${isLow?'#d97706':'linear-gradient(90deg,#0ea5e9,#059669)'}"></span></div>
+    </div>`;
+  }).join("");
+  requestAnimationFrame(()=>setTimeout(()=>document.querySelectorAll(".bar span").forEach(s=>s.style.width=s.dataset.w+"%"),50));
+
+  $("blindTitle").textContent = `${PILLARS[low].label} (${PILLARS[low].sub})`;
+  $("blindText").textContent = BLIND[low].text;
+  $("ruleBox").innerHTML = BLIND[low].rule;
+}
+
+function archetypeCardText(){
+  const t = totalScore(), arch = getArchetype(t), low = lowestPillar();
+  const who = state.name ? `${state.name}'s` : "My";
+  const ruleText = BLIND[low].rule.replace(/<br>/g," ").replace(/<[^>]+>/g,"");
+  return [
+    `🪞 THE OBIX MIRROR — ${who} Cognitive Baseline`,
+    ``,
+    `Archetype: ${arch.level}: ${arch.name}`,
+    `Hero Alias: ${arch.hero}`,
+    `Thinking Altitude: ${thinkerLevel(t)}`,
+    `Consciousness Level: ${levelLabel(consciousnessLevel())} (${LEVELS[consciousnessLevel()].theme})`,
+    `Leadership Level: ${leadershipLabel()} (${LEAD[consciousnessLevel()].theme}) — ${leadershipReadiness().label}`,
+    `Total Score: ${t}/24`,
+    ``,
+    `• Noise Filtering: ${state.scores.noise}/6`,
+    `• Pattern Identification: ${state.scores.pattern}/6`,
+    `• Second-Order Judgment: ${state.scores.judgment}/6`,
+    `• Meta-Cognition: ${state.scores.meta}/6`,
+    ``,
+    `Blind Spot: ${PILLARS[low].label}`,
+    `7-Day Rule: ${ruleText}`,
+    ``,
+    `Run your own 24-hour simulation: ${location.href.split("#")[0]}`
+  ].join("\n");
+}
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),2200); }
+function fallbackCopy(text){
+  const ta = document.createElement("textarea");
+  ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  let ok=false; try{ ok=document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+  toast(ok ? "Archetype card copied ✓" : "Copy failed — please copy manually");
+}
+$("copyBtn").addEventListener("click",()=>{
+  const text = archetypeCardText();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>toast("Archetype card copied ✓")).catch(()=>fallbackCopy(text));
+  } else fallbackCopy(text);
+});
+
+/* ---------- Flow ---------- */
+$("startBtn").addEventListener("click",()=>{
+  resetState();
+  $("clock").classList.add("on");
+  $("progress").classList.add("on");
+  renderScene();
+  showScreen("screen-scene");
+});
+$("restartBtn").addEventListener("click",()=>{
+  resetState();
+  $("leadForm").reset();
+  $("clock").classList.remove("on");
+  $("progress").classList.remove("on");
+  $("progressBar").style.width = "0";
+  showScreen("screen-intro");
+});
+
+// Keyboard shortcuts: A / B (or 1 / 2) on scene screens
+document.addEventListener("keydown",e=>{
+  if(!$("screen-scene").classList.contains("active") || state.locked) return;
+  const k = e.key.toLowerCase();
+  const i = (k==="a"||k==="1") ? 0 : (k==="b"||k==="2") ? 1 : -1;
+  if(i>=0){ const btns=document.querySelectorAll(".choice"); if(btns[i]) btns[i].click(); }
+});
+</script>
+</body>
+</html>
