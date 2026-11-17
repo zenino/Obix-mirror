@@ -200,6 +200,7 @@
   .lead.developing .ld-badge{background:#e0f2fe;color:#0369a1}
   .lead.capable .ld-badge{background:#ede9fe;color:#6d28d9}
   .lead.strong .ld-badge{background:#d1fae5;color:#047857}
+  .ld-theme{font-size:12px;font-weight:600;font-style:italic;margin-top:1px}
   .ld-steps{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
   .ld-step{display:flex;flex-direction:column;align-items:center;gap:5px}
   .ld-step span{width:100%;height:8px;border-radius:4px;background:#e5e7eb}
@@ -445,17 +446,17 @@
     </div>
 
     <div class="card lead" id="ldCard">
-      <span class="eyebrow">Leadership Level · Barrett Leadership Model</span>
-      <h2 id="ldTitle" style="margin:8px 0 10px"></h2>
+      <span class="eyebrow">Leadership Value Level · Barrett Leadership Model</span>
+      <h2 id="ldTitle" style="margin:8px 0 4px"></h2>
+      <div class="lv-sub" id="ldValue" style="margin-bottom:10px"></div>
       <span class="ld-badge" id="ldBadge"></span>
       <p id="ldReady" style="margin:12px 0 14px"></p>
-      <div class="ld-steps" id="ldSteps"></div>
-      <div class="ld-scale"><span>Crisis Manager</span><span>Visionary</span></div>
+      <div class="lv-ladder" id="ldSteps"></div>
       <div class="ld-grid">
         <div class="ld-box good"><b>Leadership strength</b><span id="ldStrength"></span></div>
         <div class="ld-box warn"><b>Watch out for</b><span id="ldWatch"></span></div>
       </div>
-      <div class="lv-credit">An indicator based on 8 everyday choices — useful for reflection and coaching, not a hiring or promotion decision on its own.</div>
+      <div class="lv-credit">Leadership levels: Richard Barrett's Seven Levels of Leadership Consciousness (Barrett Values Centre). An indicator based on 8 everyday choices — useful for reflection and coaching, not a hiring or promotion decision on its own.</div>
     </div>
 
     <div class="hero-row" id="resHeroes"></div>
@@ -808,19 +809,26 @@ function growthEdge(){
 }
 /* ---------- Barrett Seven Levels of Leadership Consciousness ---------- */
 const LEAD = {
-  1:{ name:"Crisis Manager",           strengths:"Stays calm and practical in a crisis. Keeps money, safety and rules under control.",
+  1:{ name:"Crisis Manager",          theme:"Financial Stability",  values:"Able to manage adversity",
+      strengths:"Stays calm and practical when things go wrong. Keeps money, safety and the basics under control.",
       watch:"May try to control everything, find it hard to delegate, and be slow to build trust." },
-  2:{ name:"Relationship Manager",     strengths:"Good with people — communicates well, sorts out conflicts, and gives praise and feedback.",
+  2:{ name:"Relationship Manager",    theme:"Supporting Relationships", values:"Communication, respect, accessibility, approachability",
+      strengths:"Easy to approach — communicates well with employees and customers and treats people with respect.",
       watch:"May avoid difficult conversations, play favourites, or resist new people and new ideas." },
-  3:{ name:"Manager / Organiser",      strengths:"Organised and logical — builds systems, plans well, tracks numbers and cares about quality.",
+  3:{ name:"Performance Manager",     theme:"Best Practice",        values:"Productivity, efficiency, quality, competence, results",
+      strengths:"Organised and results-focused — builds good systems, plans well and cares about quality.",
       watch:"May chase status or power, add red tape, get pulled into office politics, or overwork." },
-  4:{ name:"Facilitator / Influencer", strengths:"Asks for advice, builds agreement, and gives people room to learn and try new ideas.",
+  4:{ name:"Facilitator / Innovator", theme:"Continuous Renewal",   values:"Accountability, team building, resilience, innovation, empowerment",
+      strengths:"Builds the team, takes ownership, bounces back from setbacks and gives people room to try new ideas.",
       watch:"Still working through old fears — of failing, or of not being recognised enough." },
-  5:{ name:"Integrator / Inspirer",    strengths:"Creates a shared vision, acts with integrity, and builds a fair, open team where people want to give their best.",
-      watch:"Vision needs strong basics underneath — without follow-through, people lose trust." },
-  6:{ name:"Mentor / Partner",         strengths:"Coaches and develops people, builds partnerships, and thinks about the wider community.",
+  5:{ name:"Authentic Leader",        theme:"Self-Expression",      values:"Authenticity, integrity, purpose, clarity, transparency",
+      strengths:"Leads from clear values and purpose — honest, transparent and trusted by the team.",
+      watch:"Values need strong basics underneath — without follow-through, people lose trust." },
+  6:{ name:"Mentor / Partner Leader", theme:"Collaboration",        values:"Partnerships, coaching, leadership development, empathy",
+      strengths:"Coaches and develops people, builds partnerships, and grows the next generation of leaders.",
       watch:"Must keep holding people accountable while being supportive." },
-  7:{ name:"Visionary",                strengths:"Sees the big picture, serves the team and society, and leads with patience and humility.",
+  7:{ name:"Visionary Leader",        theme:"Service",              values:"Vision, long-term perspective, ethics, compassion",
+      strengths:"Sees the long-term picture, creates a new future, and leads with ethics and compassion.",
       watch:"Must stay connected to day-to-day realities and the people doing the work." }
 };
 function leadershipReadiness(){
@@ -840,13 +848,27 @@ function renderLeadership(){
   const l = consciousnessLevel(), r = leadershipReadiness();
   const weak = [1,2,3].find(x=>levelStatus(x)!=="active");
   $("ldCard").className = `card lead ${r.key}`;
-  $("ldTitle").innerHTML = `Level ${l} Leader: <span style="color:${LEVELS[l].color}">${LEAD[l].name}</span>`;
+  $("ldTitle").innerHTML = `Level ${l}: <span style="color:${LEVELS[l].color}">${LEAD[l].name}</span>`;
+  $("ldValue").textContent = `Leadership value: ${LEAD[l].theme} — ${LEAD[l].values}`;
   $("ldBadge").textContent = r.label;
   $("ldReady").textContent = r.text;
   $("ldStrength").textContent = LEAD[l].strengths;
   $("ldWatch").textContent = weak && weak < l ? `From Level ${weak} (${LEAD[weak].name}): ${LEAD[weak].watch}` : LEAD[l].watch;
-  $("ldSteps").innerHTML = [1,2,3,4,5,6,7].map(x=>`<div class="ld-step ${x===l?'cur':''} ${x<l?'done':''}" style="--c:${LEVELS[x].color}" title="Level ${x}: ${LEAD[x].name}">
-    <span></span><small>${x}</small></div>`).join("");
+  const widths = {7:100,6:78,5:56,4:0,3:56,2:78,1:100};
+  let html = "";
+  for(let x=7;x>=1;x--){
+    const L = LEAD[x], c = LEVELS[x].color, cur = x===l;
+    const shape = x===4 ? `<div class="lv-circle" style="${cur?`background:${c}22;border-color:${c}`:''}"></div>`
+      : `<div class="lv-shape ${x>4?'top':'bot'}" style="width:${widths[x]}%;${cur?`background:${c}2e`:''}"></div>`;
+    html += `<div class="lv-row ${cur?'cur':''} ${x>l?'above':''}">
+      <div class="lv-vis">${shape}<span class="lv-num" style="background:${c}">${x}</span></div>
+      <div class="lv-txt">
+        <div class="lv-name"><b style="color:${c};text-transform:uppercase;font-size:12.5px;letter-spacing:.03em">${L.name}</b>${cur?'<span class="you">YOU ARE HERE</span>':''}</div>
+        <div class="ld-theme" style="color:${c}">${L.theme}</div>
+        <div class="lv-theme">${L.values}</div>
+      </div></div>`;
+  }
+  $("ldSteps").innerHTML = html;
 }
 
 function renderLevels(){
@@ -1099,7 +1121,7 @@ function archetypeCardText(){
     `Hero Alias: ${arch.hero}`,
     `Thinking Altitude: ${thinkerLevel(t)}`,
     `Consciousness Level: ${levelLabel(consciousnessLevel())} (${LEVELS[consciousnessLevel()].theme})`,
-    `Leadership Level: ${leadershipLabel()} — ${leadershipReadiness().label}`,
+    `Leadership Level: ${leadershipLabel()} (${LEAD[consciousnessLevel()].theme}) — ${leadershipReadiness().label}`,
     `Total Score: ${t}/24`,
     ``,
     `• Noise Filtering: ${state.scores.noise}/6`,
